@@ -2,6 +2,7 @@
 
 Windows向けTJA譜面エディターの配布専用リポジトリです。
 ダウンロードは[Releases](https://github.com/sinty0506/Tja-editor-releases/releases)から、Windows x64用ZIPを選んでください。
+現在の軽量版ZIPは約184.6MBです。重複する実行環境と非表示機能を除き、通常の編集・撮影機能を維持しています。
 
 ZIPをすべて展開し、フォルダー内の **TJA Editor.exe** を起動します。exeだけを取り出さないでください。
 コード署名はありません。配布ファイルのSHA-256を各リリースに添付しています。
