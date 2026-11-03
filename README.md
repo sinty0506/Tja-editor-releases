@@ -1,4 +1,4 @@
-# X.E.N.O — TJA Editor for Windows
+# TJA Editor for Windows
 
 Windows向けTJA譜面エディターの配布専用リポジトリです。
 ダウンロードは[Releases](https://github.com/sinty0506/Tja-editor-releases/releases)から、Windows x64用ZIPを選んでください。
