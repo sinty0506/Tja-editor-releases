@@ -1,4 +1,13 @@
-# TJA Editor for Windows
+# TJA Editor
+
+## Web版（インストール不要）
+
+[ブラウザーでTJA Editor Webを開く](https://tja-editor-web.trueporcupine1.chatgpt.site)
+
+Web版の本体は約1.4MBです。音源はサーバーへ送らず端末内で処理します。譜面編集・音源プレビュー・自動採譜・下位譜面生成・TJA＋OGGのZIP書き出しが使えます。
+「保存」で音源付きの編集ZIPをダウンロードし、「開く」で続きを編集できます。自動バックアップはないため、閉じる前に保存してください。MP4撮影・PC音録音・別窓の試し叩きはWindows版をご利用ください。
+
+## Windows版
 
 Windows向けTJA譜面エディターの配布専用リポジトリです。
 ダウンロードは[Releases](https://github.com/sinty0506/Tja-editor-releases/releases)から、Windows x64用ZIPを選んでください。
