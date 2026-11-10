@@ -10,7 +10,7 @@
 
 Windows向けTJA譜面エディターの配布専用リポジトリです。
 ダウンロードは[Releases](https://github.com/sinty0506/Tja-editor-releases/releases)から、Windows x64用ZIPを選んでください。
-今回の更新版は[20261107-rc1](https://github.com/sinty0506/Tja-editor-releases/releases/tag/windows-20261107-rc1)です。
+今回の更新版は[20261110-rc1](https://github.com/sinty0506/Tja-editor-releases/releases/tag/windows-20261110-rc1)です。
 現在の軽量版ZIPは約184.6MBです。重複する実行環境と非表示機能を除き、通常の編集・撮影機能を維持しています。
 
 ZIPをすべて展開し、フォルダー内の **TJA Editor.exe** を起動します。exeだけを取り出さないでください。
@@ -21,6 +21,7 @@ ZIPをすべて展開し、フォルダー内の **TJA Editor.exe** を起動し
 配布版の撮影画面は独自のCanvas描画で、既存スキン・ゲーム音源・曲や動画素材を同梱しません。撮影フォントは各PCのインストール済みフォントを使います。
 編集画面の左右ツールバー・比較音声の切替・全譜面への特殊グリッド、譜面ごとの撮影素材・配置の保存にも対応します。
 多重スクロールの追加レーン、個別の表示用BPM・HS、レーン結合とTJA出力にも対応します（通常SCROLL）。
+撮影の動画素材は手元のMP4/MKVに加え、YouTubeの動画URLからも取り込めます（30分以内・最大1080p・取得可能な動画）。
 
 詳しい操作はZIP内の「はじめに.txt」「Windows版操作ガイド.md」「撮影機能ガイド.md」を参照してください。
 第三者ソフトウェアのライセンス・出典・FFmpegのソース情報とビルド設定もZIP内に含めています。
