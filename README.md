@@ -4,13 +4,13 @@
 
 [ブラウザーでTJA Editor Webを開く](https://tja-editor-web.trueporcupine1.chatgpt.site)
 
-本体約1.4MB。音源は端末内で処理し、「保存」で音源付きの編集ZIP、「書き出し」でTJA＋OGGのZIPをダウンロードできます。閉じる前に保存してください。MP4撮影・PC音録音・別窓の試し叩きはWindows版をご利用ください。
+本体約1.9MB。音源は端末内で処理し、「保存」で音源付きの編集ZIP、「書き出し」でTJA＋OGGのZIPをダウンロードできます。閉じる前に保存してください。MP4撮影・PNG保存・ローカル動画読み込み・音源編集・試し叩きに対応します。PC音録音はブラウザーの共有機能に依存します。YouTube URLからの動画・音源読み込みはWindows版をご利用ください。
 
 ## Windows版
 
 Windows向けTJA譜面エディターの配布専用リポジトリです。
 ダウンロードは[Releases](https://github.com/sinty0506/Tja-editor-releases/releases)から、Windows x64用ZIPを選んでください。
-今回の更新版は[20261110-rc1](https://github.com/sinty0506/Tja-editor-releases/releases/tag/windows-20261110-rc1)です。
+今回の更新版は[20261111-rc1](https://github.com/sinty0506/Tja-editor-releases/releases/tag/windows-20261111-rc1)です。
 現在の軽量版ZIPは約184.6MBです。重複する実行環境と非表示機能を除き、通常の編集・撮影機能を維持しています。
 
 ZIPをすべて展開し、フォルダー内の **TJA Editor.exe** を起動します。exeだけを取り出さないでください。
