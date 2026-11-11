@@ -4,7 +4,7 @@
 
 音源からの自動採譜、下位難易度の譜面生成、波形を使ったノート編集、多重スクロール、譜面分岐、音源編集、演奏動画のMP4撮影に対応します。
 
-再生中の譜面編集と、画面／GOGO／1小節／4小節のループ再生に対応。ループの待機は1/4小節刻みで、待機中はメトロノームが鳴ります。独立した編集バーと爆弾音符（C）も利用できます。
+再生中の譜面編集と、画面／GOGO／1小節／4小節のループ再生に対応。ループの待機は1/4小節刻みで、待機中はメトロノームが鳴ります。独立した編集バーと爆弾音符（C）も利用できます。ループ中も↑／↓でグリッドを変更し、←／→で編集バーを移動できます。
 
 ## Web版（インストール不要）
 
@@ -17,8 +17,8 @@ MP4撮影・PNG保存・ローカル動画の読み込み・音源編集・試�
 
 [Windows版の紹介・インストール案内](https://tja-editor-web.trueporcupine1.chatgpt.site/desktop.html)
 
-最新の再生中編集・ループ対応版は [20261111-rc3](https://github.com/sinty0506/Tja-editor-releases/releases/tag/windows-20261111-rc3) です。
-[Windows x64用ZIPをダウンロード](https://github.com/sinty0506/Tja-editor-releases/releases/download/windows-20261111-rc3/Tja-Editor3-Windows-x64-20261111-rc3.zip)（約184.6MB）。
+最新のループ操作修正版は [20261111-rc4](https://github.com/sinty0506/Tja-editor-releases/releases/tag/windows-20261111-rc4) です。
+[Windows x64用ZIPをダウンロード](https://github.com/sinty0506/Tja-editor-releases/releases/download/windows-20261111-rc4/Tja-Editor3-Windows-x64-20261111-rc4.zip)（約184.6MB）。
 
 ZIPをすべて展開し、フォルダー内の **Tja-Editor3.exe** を起動してください。exeだけを取り出さず、フォルダー一式を保持してください。
 コード署名はありません。各リリースに照合用SHA-256を添付しています。
