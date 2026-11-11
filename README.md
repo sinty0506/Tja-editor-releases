@@ -6,6 +6,8 @@
 
 再生中の譜面編集と、画面／GOGO／1小節／4小節のループ再生に対応。ループの待機は1/4小節刻みで、待機中はメトロノームが鳴ります。独立した編集バーと爆弾音符（C）も利用できます。ループ中も↑／↓でグリッドを変更し、←／→で編集バーを移動できます。
 
+ノーツ・イベントの説明欄に現在の配置キーを表示し、未選択時は基本操作を案内します。リアルタイム入力 Ctrl+Alt+R、試し叩き Ctrl+Alt+P、メトロノーム Ctrl+M、ループ Ctrl+Alt+L はキー設定で変更できます。撮影時の爆弾音符は判定位置を通過し、初期フォントは大江戸です（未インストールの場合は代替書体）。
+
 ## Web版（インストール不要）
 
 [ブラウザーでTja-Editor3を使う](https://tja-editor-web.trueporcupine1.chatgpt.site/) / [Tja-Editor3について](https://tja-editor-web.trueporcupine1.chatgpt.site/about.html)
@@ -17,8 +19,8 @@ MP4撮影・PNG保存・ローカル動画の読み込み・音源編集・試�
 
 [Windows版の紹介・インストール案内](https://tja-editor-web.trueporcupine1.chatgpt.site/desktop.html)
 
-最新のループ操作修正版は [20261111-rc4](https://github.com/sinty0506/Tja-editor-releases/releases/tag/windows-20261111-rc4) です。
-[Windows x64用ZIPをダウンロード](https://github.com/sinty0506/Tja-editor-releases/releases/download/windows-20261111-rc4/Tja-Editor3-Windows-x64-20261111-rc4.zip)（約184.6MB）。
+最新のキー操作・撮影更新版は [20261112-rc2](https://github.com/sinty0506/Tja-editor-releases/releases/tag/windows-20261112-rc2) です。
+[Windows x64用ZIPをダウンロード](https://github.com/sinty0506/Tja-editor-releases/releases/download/windows-20261112-rc2/Tja-Editor3-Windows-x64-20261112-rc2.zip)（約184.7MB）。
 
 ZIPをすべて展開し、フォルダー内の **Tja-Editor3.exe** を起動してください。exeだけを取り出さず、フォルダー一式を保持してください。
 コード署名はありません。各リリースに照合用SHA-256を添付しています。
