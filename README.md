@@ -1,28 +1,33 @@
-# TJA Editor
+# Tja-Editor3 — 無料のTJA譜面エディター
+
+しんてぃ開発のTJA譜面作成・編集アプリです。同名の別ソフトと区別するため、旧称「TJA Editor」から **Tja-Editor3** に改名しました。
+
+音源からの自動採譜、下位難易度の譜面生成、波形を使ったノート編集、多重スクロール、譜面分岐、音源編集、演奏動画のMP4撮影に対応します。
 
 ## Web版（インストール不要）
 
-[ブラウザーでTJA Editor Webを開く](https://tja-editor-web.trueporcupine1.chatgpt.site)
+[ブラウザーでTja-Editor3を使う](https://tja-editor-web.trueporcupine1.chatgpt.site/) / [Tja-Editor3について](https://tja-editor-web.trueporcupine1.chatgpt.site/about.html)
 
-本体約1.9MB。音源は端末内で処理し、「保存」で音源付きの編集ZIP、「書き出し」でTJA＋OGGのZIPをダウンロードできます。閉じる前に保存してください。MP4撮影・PNG保存・ローカル動画読み込み・音源編集・試し叩きに対応します。PC音録音はブラウザーの共有機能に依存します。YouTube URLからの動画・音源読み込みはWindows版をご利用ください。
+音源・動画は端末内で処理します。「保存」で音源付きの編集ZIP、「書き出し」でTJA＋OGGのZIPをダウンロードできます。閉じる前に保存してください。
+MP4撮影・PNG保存・ローカル動画の読み込み・音源編集・試し叩きに対応します。PC音録音はブラウザーの共有機能に依存します。YouTube URLからの直接読み込みはWindows版をご利用ください。
 
 ## Windows版
 
-Windows向けTJA譜面エディターの配布専用リポジトリです。
-ダウンロードは[Releases](https://github.com/sinty0506/Tja-editor-releases/releases)から、Windows x64用ZIPを選んでください。
-今回の更新版は[20261111-rc1](https://github.com/sinty0506/Tja-editor-releases/releases/tag/windows-20261111-rc1)です。
-現在の軽量版ZIPは約184.6MBです。重複する実行環境と非表示機能を除き、通常の編集・撮影機能を維持しています。
+[Windows版の紹介・インストール案内](https://tja-editor-web.trueporcupine1.chatgpt.site/desktop.html)
 
-ZIPをすべて展開し、フォルダー内の **TJA Editor.exe** を起動します。exeだけを取り出さないでください。
-コード署名はありません。配布ファイルのSHA-256を各リリースに添付しています。
+最新の名称変更版は [20261111-rc2](https://github.com/sinty0506/Tja-editor-releases/releases/tag/windows-20261111-rc2) です。
+[Windows x64用ZIPをダウンロード](https://github.com/sinty0506/Tja-editor-releases/releases/download/windows-20261111-rc2/Tja-Editor3-Windows-x64-20261111-rc2.zip)（約184.6MB）。
 
-波形を使った譜面編集、複数難易度、譜面分岐、TJA読み込み・書き出し、音源編集、MP4撮影に対応します。
-撮影では2譜面比較・全難易度・分岐3／6譜面を表示でき、Spaceで再生／停止、Sで先頭へ戻せます。
-配布版の撮影画面は独自のCanvas描画で、既存スキン・ゲーム音源・曲や動画素材を同梱しません。撮影フォントは各PCのインストール済みフォントを使います。
-編集画面の左右ツールバー・比較音声の切替・全譜面への特殊グリッド、譜面ごとの撮影素材・配置の保存にも対応します。
-多重スクロールの追加レーン、個別の表示用BPM・HS、レーン結合とTJA出力にも対応します（通常SCROLL）。
-撮影の動画素材は手元のMP4/MKVに加え、YouTubeの動画URLからも取り込めます（30分以内・最大1080p・取得可能な動画）。
+ZIPをすべて展開し、フォルダー内の **Tja-Editor3.exe** を起動してください。exeだけを取り出さず、フォルダー一式を保持してください。
+コード署名はありません。各リリースに照合用SHA-256を添付しています。
+
+既存の `.tjaproj` / `.tjadanproj` を引き続き使用できます。名称変更のためにプロジェクト形式やキー設定の保存キーを変更していません。
+
+Windows版はファイルへの直接保存、YouTubeの音源・動画URLからの読み込み、MP4／MKV撮影、譜面ごとの撮影素材・配置の保存に対応します。
+撮影では2譜面比較・全難易度・分岐3／6譜面を表示できます。多重スクロールの追加レーン、個別の表示用BPM・HS、レーン結合とTJA出力にも対応します（通常SCROLL）。
 
 詳しい操作はZIP内の「はじめに.txt」「Windows版操作ガイド.md」「撮影機能ガイド.md」を参照してください。
-第三者ソフトウェアのライセンス・出典・FFmpegのソース情報とビルド設定もZIP内に含めています。
-このリポジトリは配布用です。開発用リポジトリの内容や個人用スキン版は公開していません。
+
+配布版は独自のCanvas描画を使用し、既存のゲームスキン・ゲーム音源・曲や動画素材を同梱しません。撮影フォントは各PCにインストールされたものを使用します。第三者ソフトウェアのライセンス・出典・FFmpegのソース情報とビルド設定を同梱しています。
+
+このリポジトリは配布専用です。開発用リポジトリの内容や個人用スキン版は公開していません。
