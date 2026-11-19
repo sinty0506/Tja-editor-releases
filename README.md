@@ -10,17 +10,19 @@
 
 ## Web版（インストール不要）
 
-[ブラウザーでTja-Editor3を使う](https://tja-editor-web.trueporcupine1.chatgpt.site/) / [Tja-Editor3について](https://tja-editor-web.trueporcupine1.chatgpt.site/about.html)
+[ブラウザーでTja-Editor3を使う](https://sinty0506.github.io/Tja-editor-releases/) / [Tja-Editor3について](https://sinty0506.github.io/Tja-editor-releases/about.html)
 
 音源・動画は端末内で処理します。「保存」で音源付きの編集ZIP、「書き出し」でTJA＋OGGのZIPをダウンロードできます。閉じる前に保存してください。
 MP4撮影・PNG保存・ローカル動画の読み込み・音源編集・試し叩きに対応します。PC音録音はブラウザーの共有機能に依存します。YouTube URLからの直接読み込みはWindows版をご利用ください。
 
 ## Windows版
 
-[Windows版の紹介・インストール案内](https://tja-editor-web.trueporcupine1.chatgpt.site/desktop.html)
+[Windows版の紹介・インストール案内](https://sinty0506.github.io/Tja-editor-releases/desktop.html)
 
-最新のキー操作・撮影更新版は [20261112-rc2](https://github.com/sinty0506/Tja-editor-releases/releases/tag/windows-20261112-rc2) です。
-[Windows x64用ZIPをダウンロード](https://github.com/sinty0506/Tja-editor-releases/releases/download/windows-20261112-rc2/Tja-Editor3-Windows-x64-20261112-rc2.zip)（約184.7MB）。
+最新のWindows配布版は [20261119-rc1](https://github.com/sinty0506/Tja-editor-releases/releases/tag/windows-20261119-rc1) です。
+[Windows x64用ZIPをダウンロード](https://github.com/sinty0506/Tja-editor-releases/releases/latest/download/Tja-Editor3-Windows-x64.zip)（約180.0MB）。
+
+等速化・加減速カーブ・周期スクロール、演出コピー、範囲の変形／反転、プリセット、詳細統計、分岐譜面のPNG出力を収録しています。
 
 ZIPをすべて展開し、フォルダー内の **Tja-Editor3.exe** を起動してください。exeだけを取り出さず、フォルダー一式を保持してください。
 コード署名はありません。各リリースに照合用SHA-256を添付しています。
@@ -35,3 +37,8 @@ Windows版はファイルへの直接保存、YouTubeの音源・動画URLから
 配布版は独自のCanvas描画を使用し、既存のゲームスキン・ゲーム音源・曲や動画素材を同梱しません。撮影フォントは各PCにインストールされたものを使用します。第三者ソフトウェアのライセンス・出典・FFmpegのソース情報とビルド設定を同梱しています。
 
 このリポジトリは配布専用です。開発用リポジトリの内容や個人用スキン版は公開していません。
+
+
+## Webサイトの公開・更新
+
+Web版とWindows版の紹介ページはGitHub Pagesで配信しています。閲覧にChatGPTやGitHubのログインは不要です。更新方法は [DEPLOYMENT.md](DEPLOYMENT.md) を参照してください。

@@ -1,0 +1,180 @@
+/* Size the editor from the browser viewport, leaving scrolling to content panels. */
+html.web-app{--palette-width:196px}
+.web-app body{height:100dvh;grid-template-rows:auto minmax(0,1fr) 28px}
+.web-app .web-notice{font-size:10px;color:#9cb6c7;margin:0 0 0 auto;max-width:310px;line-height:1.4}
+.web-app .workspace-save-state{display:none}
+.web-app #system-recording-row,.web-app #open-practice{display:none!important}
+.web-app #record-video{display:none!important}
+.web-app #practice-toggle{display:none!important}
+.web-app .workspace-display-scale{display:none!important}
+.web-app .toolbar{flex-shrink:0}
+.web-app .workspace-brand{white-space:nowrap}
+.web-app .toolbar{padding:4px 8px;gap:3px}
+.web-app .workspace-titlebar{min-height:30px;padding-bottom:3px;gap:10px}
+.web-app .workspace-brand{font-size:13px}
+.web-app .toolbar button,.web-app .toolbar summary{min-height:30px;padding:4px 7px}
+.web-app .navigation-row{padding-top:3px}
+.web-app .workspace-statusbar{min-height:28px;padding:2px 10px}
+.web-app main{grid-template-columns:minmax(0,1fr);grid-template-rows:minmax(170px,1fr) 30px minmax(58px,.22fr) minmax(70px,.25fr) var(--event-lane-height) 42px;overflow:auto}
+.web-app main>section{min-width:0}
+.web-app .editing-overview{grid-template-columns:minmax(0,1fr) 250px 220px!important;gap:6px;overflow:hidden}
+.web-app .editing-overview>*{min-height:0;min-width:0}
+.web-app .editing-overview>.preview{display:flex;flex-direction:column;overflow:hidden}
+.web-app .editing-overview .preview-stage{flex:1 1 0;min-height:30px;height:auto}
+.web-app .editing-overview .preview-header{flex:0 0 auto;gap:4px}
+.web-app .editing-overview .preview-header small{display:none}
+.web-app .editing-controls,.web-app .editing-context{overflow:auto;scrollbar-gutter:auto;padding:4px 6px}
+.web-app .editing-controls .tool-detail-panel{overflow:visible}
+.web-app .wide-settings-open{grid-template-columns:minmax(0,1fr) minmax(500px,1.2fr)!important}
+.web-app .docked-dialog-body{scrollbar-gutter:auto}
+.web-app .wide-settings-open #auto-chart-form>.docked-dialog-body{overflow:auto}
+.web-app .docked-dialog-pane{overflow:visible}
+.web-app .palette-primary{scrollbar-gutter:auto}
+.web-app .tool-palette{padding:5px}
+.web-app .tool-palette section{margin-top:8px}
+.web-app .tool-palette h2{margin-bottom:4px}
+.web-app .palette-grid{gap:4px}
+.web-app .palette-grid button{min-height:32px}
+.web-app .palette-editing-tools{gap:5px;padding-top:5px}
+.web-app .palette-editing-tools .editor-zoom,.web-app .palette-editing-tools .editor-speed{gap:3px}
+.web-app .workspace-tool-hint{margin-bottom:4px;font-size:9px}
+.web-app :is(main,.palette-primary,.editing-controls,.editing-context,.docked-dialog-body){scrollbar-width:thin}
+.web-app :is(main,.palette-primary,.editing-controls,.editing-context,.docked-dialog-body)::-webkit-scrollbar{width:6px;height:6px}
+@media(max-width:1500px){.web-app .editing-overview{grid-template-columns:minmax(0,1fr) 230px 190px!important}.web-app .web-notice{max-width:210px}.web-app .toolbar-statistics{display:none!important}}
+@media(max-width:1150px){.web-app .editing-overview{grid-template-columns:minmax(0,1fr) 240px!important}.web-app .editing-context,.web-app .web-notice{display:none}.web-app .wide-settings-open{grid-template-columns:minmax(0,1fr)!important}.web-app .wide-settings-open>.preview{display:none}.web-app .wide-settings-open #workspace-settings-host{grid-column:1/-1}}
+@media(max-height:780px){.web-app main{grid-template-rows:minmax(160px,1fr) 28px 58px 70px var(--event-lane-height) 36px}.web-app .workspace-tool-hint{display:none}.web-app .tool-palette section{margin-top:5px}.web-app .palette-grid button{min-height:29px;padding-block:3px}.web-app .palette-editing-tools :is(select,button){min-height:25px}}
+
+/* One vertically scrollable workspace: movie above, editor at entry, tools below. */
+.web-app body{grid-template-columns:minmax(0,1fr);grid-template-rows:auto minmax(0,1fr) 28px}
+.web-app #web-content{grid-column:1;grid-row:2;min-width:0;min-height:0;overflow:auto;scroll-behavior:auto;scrollbar-width:thin}
+.web-app #web-editor{display:grid;grid-template-columns:var(--palette-width) minmax(0,1fr);height:calc(max(660px,calc(var(--web-editor-height,700px) + 64px)) + var(--web-timeline-extra-height,0px));min-height:660px;position:relative;scroll-margin-top:0}
+.web-app #web-editor>.tool-palette{grid-column:1;grid-row:1;min-height:0}
+.web-app #web-editor>main{grid-column:2;grid-row:1;overflow:hidden;grid-template-rows:minmax(155px,1fr) 28px 72px calc(var(--note-lane-height) + 24px) var(--event-lane-height) 36px}
+.web-app .editing-overview,.web-app .editing-overview.wide-settings-open{grid-template-columns:minmax(0,1fr) minmax(230px,.42fr)!important;overflow:hidden}
+.web-app .editing-context{display:block!important;overflow:auto;padding:8px 14px}
+.web-app .editing-overview>.preview{display:flex!important}
+.web-app .history-controls{display:flex;flex-wrap:nowrap;gap:4px;margin-left:6px;flex:0 0 auto}
+.web-app .workspace-audio-actions{flex-wrap:nowrap}
+.web-app .navigation-row{flex-wrap:wrap;gap:5px}
+.web-app #record-video{display:inline-flex!important}
+.web-app .web-surface{background:#111a28;border:1px solid #34445b;border-radius:8px;padding:18px;min-width:0}
+.web-app .web-surface h2{font-size:17px;margin:0 0 12px;color:#cde9f4}
+.web-app .web-surface p{font-size:12px;line-height:1.6}
+.web-app #web-recording{margin:16px;scroll-margin:16px}
+.web-app #web-recording>header{display:flex;flex-wrap:wrap;align-items:center;gap:8px 18px}
+.web-app #web-recording>header p{flex:1;min-width:240px}
+.web-app #web-recording-mount{min-height:100px}
+.web-app #web-recording-mount iframe{display:block;border:0;width:100%;height:850px;background:#10141d;margin-top:12px}
+.web-app #web-panels{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.45fr) minmax(0,1fr);gap:14px;padding:16px;align-items:start}
+.web-app .web-panel-column{min-width:0}
+.web-app .web-persistent{display:block!important;position:static!important;inset:auto!important;margin:0 0 20px!important;padding:0!important;border:0!important;box-shadow:none!important;background:transparent!important;width:100%!important;max-width:none!important;max-height:none!important;overflow:visible!important;color:inherit}
+.web-app .web-persistent form{display:flex!important;flex-direction:column;gap:8px;height:auto;min-width:0}
+.web-app .web-persistent h2{font-size:15px;margin-top:14px}
+.web-app .web-persistent p{margin:4px 0;line-height:1.5}
+.web-app .web-persistent :is(.auto-chart-settings,.auto-sound-mapping,.auto-chart-advanced-grid,.branch-create-grid){display:grid;grid-template-columns:minmax(0,1fr);gap:8px}
+.web-app .web-persistent fieldset{min-width:0;padding:10px;margin:5px 0}
+.web-app .web-persistent label{font-size:12px;display:flex;flex-wrap:wrap;align-items:center;gap:6px;min-width:0}
+.web-app .web-persistent :is(input:not([type=checkbox]),select){max-width:100%;min-width:0}
+.web-app .web-persistent input[type=range]{flex:1;width:100%;min-width:100px}
+.web-app .web-persistent .dialog-actions{position:static!important;padding:6px 0;background:transparent;flex-wrap:wrap}
+.web-app .web-persistent .workflow-card{margin:10px 0}
+.web-app #web-timing .offset-panel{display:flex;flex-direction:column;align-items:stretch;margin-bottom:14px}
+.web-app #web-timing .barline-origin-controls{display:flex;flex-wrap:wrap}
+.web-app #inline-demo-controls{padding:0;border:0;margin-bottom:25px}
+.web-app #inline-demo-controls label{font-size:12px;display:flex;gap:8px;align-items:center;margin:8px 0}
+.web-app #web-song-settings .branch-section-list{max-height:none;overflow:visible}
+.web-app #web-panels #add-branch-section{display:inline-flex}
+.web-app .web-no-project{opacity:.65}
+.web-app #web-audio{margin:0 16px 24px}
+.web-app #web-audio #audio-editor-view{position:static;inset:auto;grid-column:auto;grid-row:auto;width:100%;height:700px;min-height:600px;margin-top:16px;z-index:auto}
+.web-app #web-audio #audio-editor-view[hidden]{display:none!important}
+.web-app #web-audio #open-audio-editor{display:inline-flex}
+.web-app #system-recording-row{display:flex!important;flex-wrap:wrap}
+.web-app #practice-toggle{display:flex!important}
+.web-app #web-panels details{border:1px solid #34445b;padding:10px;border-radius:6px}
+.web-app #web-panels details>summary{cursor:pointer;color:#a8dcf0}
+/* Keep a single lane inside the available preview height, including short windows. */
+.web-app .editing-overview .preview:has(#compare-preview-stage[hidden])>.preview-stage{min-height:0!important}
+.web-app .playback-position-control>#playback-position{height:24px;min-height:24px;margin:0;padding:0}
+.web-app #playback-position::-webkit-slider-runnable-track{height:4px}
+.web-app #playback-position::-webkit-slider-thumb{width:18px;height:18px;margin-top:-7px;box-shadow:0 0 0 2px rgb(255 203 76 / 18%)}
+.web-app #playback-position:focus-visible{outline:none}
+.web-app #playback-position:focus-visible::-webkit-slider-thumb{outline:2px solid #7ec8eb;outline-offset:1px}
+.web-app #playback-position::-moz-range-track{height:4px;border-radius:999px;background:#5a4a23}
+.web-app #playback-position::-moz-range-thumb{width:14px;height:14px;border:2px solid #fff1bf;border-radius:50%;background:#ffcb4c}
+.web-app #playback-position:focus-visible::-moz-range-thumb{outline:2px solid #7ec8eb;outline-offset:1px}
+.web-app .palette-primary{scrollbar-width:none;overflow:visible;overscroll-behavior:auto}
+.web-app .palette-primary::-webkit-scrollbar{display:none;width:0;height:0}
+.web-app .editing-context #multi-scroll-panel{position:static;inset:auto;transform:none;width:100%;max-width:none;max-height:none;margin:0 0 8px;padding:5px;border:1px solid #40516a;border-radius:5px;box-shadow:none;overflow:visible}
+.web-app .editing-context #multi-scroll-panel[open]{display:block!important}
+.web-app .editing-context #multi-scroll-panel form{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:4px}
+.web-app .editing-context #multi-scroll-panel header,.web-app .editing-context #multi-scroll-panel p{grid-column:1/-1}
+.web-app .editing-context #multi-scroll-panel header{gap:4px;font-size:12px}
+.web-app .editing-context #multi-scroll-panel label{display:flex;flex-direction:column;align-items:stretch;gap:2px;font-size:10px}
+.web-app .editing-context #multi-scroll-panel input{min-width:0;width:100%;height:24px;min-height:24px;padding:2px 4px;font-size:11px}
+.web-app .editing-context #multi-scroll-panel button{min-width:0;min-height:22px;padding:2px 5px;font-size:10px}
+.web-app .editing-context #multi-scroll-panel [data-close],.web-app .editing-context #multi-scroll-panel [data-hs-step]{flex:0 0 22px;width:22px;min-width:22px}
+.web-app .editing-context #multi-scroll-panel .multi-scroll-hs-control{gap:2px}
+.web-app .editing-context #multi-scroll-panel .multi-scroll-hs-control input{flex:1;width:0}
+.web-app .editing-context #multi-scroll-panel p{font-size:9px;line-height:1.3;margin:0}
+@media(max-width:1050px){.web-app #web-panels{grid-template-columns:minmax(0,1fr) minmax(0,1.3fr)}.web-app #web-song-settings{grid-column:1/-1}.web-app .web-notice{display:none}}
+@media(max-width:760px){.web-app #web-panels{grid-template-columns:minmax(0,1fr)}.web-app #web-song-settings{grid-column:auto}.web-app .editing-overview,.web-app .editing-overview.wide-settings-open{grid-template-columns:minmax(0,1fr)!important}.web-app .editing-context{display:none!important}}
+
+/* Filename and live chart readouts share the title row at every desktop width. */
+.web-app .workspace-document{min-width:0;gap:10px;flex:1}
+.web-app .workspace-document #project-title{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.web-app .workspace-document .toolbar-statistics{display:flex!important;flex-wrap:wrap;gap:3px 12px;font-size:11px;white-space:nowrap}
+/* Keep the controls and validation; omit the long generation explanations. */
+.web-app #auto-chart-dialog :is(.help-muted,small,.concept-choice-help),.web-app #lower-difficulty-dialog p:not(.error),.web-app #lower-report{display:none!important}
+.web-app #web-generation .auto-sound-mapping{grid-template-columns:repeat(2,minmax(0,1fr))}
+.web-app #web-generation .auto-sound-mapping legend{font-size:12px}
+.web-app #web-generation .auto-sound-mapping label{align-items:stretch;flex-direction:column;gap:3px}
+.web-app #web-generation .web-persistent{margin-bottom:14px!important}
+/* The column heading already names the workflow; empty readouts need no space. */
+.web-app #auto-chart-form>h2,.web-app #auto-chart-scope:empty,.web-app #auto-chart-status:empty,.web-app #auto-chart-error:empty{display:none!important}
+.web-app #web-generation .web-persistent form{gap:6px}
+.web-app #web-generation .auto-chart-basic{padding:8px}
+.web-app #web-generation .auto-chart-settings{gap:6px}
+.web-app #web-generation #auto-chart-scope{margin:0;padding:4px 8px;font-size:11px}
+.web-app #web-generation .auto-chart-details{margin-top:0;padding:8px}
+.web-app #web-generation .auto-chart-apply-options{margin:4px 0;gap:6px}
+.web-app .workspace-desktop-button{margin-left:auto;color:#aee8ec;border-color:#4e8a98;background:#193543;white-space:nowrap}
+.web-app .workspace-updates-button{flex:0 0 auto;white-space:nowrap;color:#ffe3a0;border-color:#806c41;background:#352e22}
+.web-app #web-updates-dialog{width:min(840px,calc(100vw - 28px));height:min(780px,calc(100dvh - 28px));max-width:none;max-height:none;padding:0;border:1px solid #4b6a80;border-radius:12px;overflow:hidden;background:#101b28;color:#e4edf8;box-shadow:0 18px 80px #000a}
+.web-app #web-updates-dialog[open]{display:flex;flex-direction:column}
+.web-app #web-updates-dialog::backdrop{background:#020711b3}
+.web-app #web-updates-dialog>header{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:18px 22px;border-bottom:1px solid #344c61;background:#162232;flex:0 0 auto}
+.web-app #web-updates-dialog h2{margin:3px 0 0;font-size:20px}
+.web-app .updates-eyebrow{margin:0;color:#8edce1;font-size:11px;letter-spacing:.08em}
+.web-app #web-updates-close{flex:0 0 auto}
+.web-app .updates-tabs{display:flex;gap:4px;padding:10px 22px 0;border-bottom:1px solid #344c61;flex:0 0 auto}
+.web-app .updates-tabs button{border:0;border-bottom:3px solid transparent;border-radius:0;background:transparent;color:#adbdcf;padding:9px 18px}
+.web-app .updates-tabs button[aria-selected=true]{border-bottom-color:#94e3e7;color:#e6fcff;background:#21394b}
+.web-app .updates-scroll{min-height:0;overflow:auto;overscroll-behavior:contain;padding:18px 22px 24px;scrollbar-gutter:stable}
+.web-app .updates-intro{margin:0 0 18px;color:#adbdcf;font-size:12px;line-height:1.8}
+.web-app .update-entry{display:block;min-height:0;padding:18px 20px;margin:0 0 12px;border:1px solid #344a60;border-radius:9px;background:#162333}
+.web-app .update-meta{display:flex;align-items:center;flex-wrap:wrap;gap:7px;font-size:10px;color:#b9cbd9}
+.web-app .update-meta time{margin-right:5px;color:#9be2e5;font-size:12px;font-variant-numeric:tabular-nums}
+.web-app .update-meta span{padding:2px 7px;border:1px solid #41566b;border-radius:12px}
+.web-app .update-entry h3{margin:9px 0;font-size:16px;line-height:1.6;color:#eef7ff}
+.web-app .update-entry ul{display:block;margin:0;padding-left:19px;font-size:13px;line-height:1.9;color:#c4d5e2}
+.web-app .update-entry li+li{margin-top:5px}
+@media(max-width:1180px){.web-app .web-notice{display:none}}
+@media(max-width:580px){.web-app #web-updates-dialog>header{padding:14px}.web-app .updates-tabs{padding:8px 14px 0}.web-app .updates-scroll{padding:14px}.web-app .update-entry{padding:14px}.web-app #web-updates-dialog h2{font-size:17px}}
+.web-app #desktop-guide-dialog{width:min(1240px,calc(100vw - 32px));height:min(900px,calc(100dvh - 32px));max-width:none;max-height:none;padding:0;overflow:hidden;border-color:#4b6a80;box-shadow:0 18px 80px #000a}
+.web-app #desktop-guide-dialog[open]{display:flex;flex-direction:column}
+.web-app #desktop-guide-dialog>header{display:flex;align-items:center;justify-content:space-between;gap:12px;flex:0 0 auto;padding:10px 18px;border-bottom:1px solid #344c61;background:#162232}
+.web-app #desktop-guide-dialog h2{margin:0;font-size:14px}
+.web-app #desktop-guide-dialog>header button{min-height:30px;padding:4px 12px}
+.web-app #desktop-guide-dialog iframe{flex:1;width:100%;min-height:0;border:0;background:#0e1521}
+.web-app #workspace-settings-dialog{box-sizing:border-box;width:min(460px,calc(100vw - 32px));max-height:calc(100dvh - 32px);padding:18px;overflow-y:auto}
+.web-app #workspace-settings-dialog[open]{display:flex;flex-direction:column;gap:14px}
+.web-app #workspace-settings-dialog>header{display:flex;align-items:center;justify-content:space-between;gap:12px;flex:0 0 auto}
+.web-app #workspace-settings-dialog h2{font-size:18px;margin:0}
+.web-app #workspace-settings-dialog>header button{min-height:32px;padding:4px 12px}
+.web-app .web-settings-items{display:grid;grid-template-columns:minmax(0,1fr);gap:8px;min-width:0}
+.web-app .web-settings-items>button{display:flex;align-items:center;gap:8px;width:100%;min-height:40px;padding:8px 12px;font-size:13px;text-align:left}
+.web-app .web-settings-items>button::after{content:'›';margin-left:auto;color:#9bc9de;font-size:18px;line-height:1}
+.web-app .web-settings-items>[hidden]{display:none!important}
+
+.web-app .web-about{padding:24px;margin-top:12px}.web-about h1{font-size:28px;margin:4px 0}.web-about-eyebrow,.web-about-note{color:#aabbd2;font-size:12px}.web-about-lead{font-size:18px}.web-about-features{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:18px;margin:18px 0}.web-about-features h2{font-size:15px}.web-about-features p,.web-about>p{line-height:1.8}.web-about-links{display:flex;flex-wrap:wrap;gap:12px}.web-about a{color:#8ccfeb}.web-about a:focus-visible{outline:2px solid #8ccfeb;outline-offset:3px}@media(max-width:700px){.web-about-features{grid-template-columns:1fr}}

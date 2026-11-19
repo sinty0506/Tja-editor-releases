@@ -1,0 +1,987 @@
+<!doctype html>
+<html lang="ja" class="web-app">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'wasm-unsafe-eval'; connect-src 'self' data:; worker-src 'self' blob:; style-src 'self'; img-src 'self' data:; media-src 'self' blob:">
+  <title>Tja-Editor3 Web版｜無料TJA譜面エディターをブラウザーで使う</title>
+  <meta name="description" content="インストール不要。Tja-Editor3 Web版を開いて、そのままTJA譜面の作成・編集を始められます。自動採譜・下位譜面生成・ループ再生・多重スクロール・譜面分岐・音源編集・MP4撮影に対応。しんてぃ開発の無料エディターです。">
+  <meta name="robots" content="index, follow">
+  <meta name="author" content="しんてぃ">
+  <meta property="og:title" content="Tja-Editor3 Web版｜無料TJA譜面エディターをブラウザーで使う">
+  <meta property="og:description" content="インストール不要。Tja-Editor3 Web版を開いて、そのままTJA譜面の作成・編集を始められます。自動採譜・下位譜面生成・ループ再生・多重スクロール・譜面分岐・音源編集・MP4撮影に対応。しんてぃ開発の無料エディターです。">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://sinty0506.github.io/Tja-editor-releases/">
+  <meta property="og:site_name" content="Tja-Editor3 Web">
+  <meta property="og:locale" content="ja_JP">
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="Tja-Editor3 Web版｜無料TJA譜面エディターをブラウザーで使う">
+  <meta name="twitter:description" content="インストール不要。Tja-Editor3 Web版を開いて、そのままTJA譜面の作成・編集を始められます。自動採譜・下位譜面生成・ループ再生・多重スクロール・譜面分岐・音源編集・MP4撮影に対応。しんてぃ開発の無料エディターです。">
+  <link rel="canonical" href="https://sinty0506.github.io/Tja-editor-releases/">
+  <script src="desktop-theme-init.js"></script>
+  <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="desktop-light.css">
+  <link rel="stylesheet" href="desktop-editing.css">
+  <link rel="stylesheet" href="web.css">
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"WebApplication","name":"Tja-Editor3 Web版","alternateName":["Tja-Editor3","TJA Editor"],"url":"https://sinty0506.github.io/Tja-editor-releases/","applicationCategory":"MultimediaApplication","operatingSystem":"Web browser","description":"インストール不要。Tja-Editor3 Web版を開いて、そのままTJA譜面の作成・編集を始められます。自動採譜・下位譜面生成・ループ再生・多重スクロール・譜面分岐・音源編集・MP4撮影に対応。しんてぃ開発の無料エディターです。","isAccessibleForFree":true,"inLanguage":"ja","dateModified":"2026-11-19","author":{"@type":"Person","name":"しんてぃ"},"offers":{"@type":"Offer","price":"0","priceCurrency":"JPY"}}</script>
+<link rel="icon" href="favicon.svg"></head>
+<body>
+  <dialog id="demo-dialog" class="assist-dialog">
+    <h2>DEMOSTART / 試聴開始</h2>
+    <label>秒数 <input id="demo-seconds" type="number" min="0" step="0.001" value="0"> 秒</label>
+    <button id="demo-here" type="button">現在の再生位置</button>
+    <div class="assist-controls"><label>ゴーゴー <select id="demo-gogo"></select></label>
+      <select id="demo-shift" aria-label="ゴーゴーからの位置"><option value="0">ぴったり</option><option value="-1">1小節前</option><option value="1">1小節後</option></select>
+      <button id="demo-use-gogo" type="button">秒数に反映</button>
+    </div>
+    <p id="demo-error" class="error"></p>
+    <div class="assist-controls"><button id="demo-apply" type="button">DEMOSTARTに設定</button><button id="demo-audition" type="button">▶ 試聴</button><button id="demo-pause" type="button">一時停止</button><button id="demo-close" type="button">閉じる</button></div>
+  </dialog>
+  <dialog id="analysis-dialog" class="assist-dialog">
+    <h2>自動BPM・OFFSET / 無音カット</h2>
+    <p>曲の一定BPMとOFFSETを推定できます。解析結果を確認してから適用してください。</p>
+    <fieldset class="workflow-card"><legend>1. 音源を解析する</legend>
+    <div class="assist-controls"><label>テンポの目安 <select id="analysis-tempo-range"><option value="auto">自動（45～600）</option><option value="slow">ゆっくり（45～110）</option><option value="standard">普通（80～180）</option><option value="fast">速い（160～600）</option></select></label></div>
+    <div class="assist-controls"><button id="analysis-detect" type="button">BPM・OFFSETを解析</button></div>
+    
+    <p id="analysis-result" role="status"></p>
+    </fieldset>
+    <fieldset class="workflow-card"><legend>2. 候補を確認して適用する</legend>
+    <div class="assist-controls"><label>BPM <input id="analysis-bpm" type="number" min="0.001" step="0.001"></label><button id="analysis-half" type="button">½倍</button><button id="analysis-double" type="button">2倍</button><button id="analysis-bpm-apply" type="button">BPMを適用</button></div>
+    <div class="assist-controls"><label>ほかの候補 <select id="analysis-candidates" aria-label="BPM候補"></select></label></div>
+    <p>「BPMを適用」はOFFSET・ノーツ時刻を保持します。一致度は目安です。候補や½倍／2倍で拍の取り方を選び、試聴で確認してください。</p>
+    <div class="assist-controls"><label>OFFSET <input id="analysis-offset" type="number" step="0.001"></label><button id="analysis-offset-detect" type="button">このBPMでOFFSET推定</button><button id="analysis-apply" type="button">BPM・OFFSETを適用</button></div>
+    </fieldset>
+    
+    
+    <fieldset class="workflow-card"><legend>前後の無音を整える</legend>
+    <button id="analysis-trim" type="button">前後の完全な無音を自動カット</button>
+    <p>全チャンネルが完全に0の部分のみ。静かな音・残響は残します。譜面と音の対応も維持し、Ctrl+Zで戻せます。</p>
+    </fieldset>
+    <div class="dialog-actions"><button id="analysis-close" type="button">閉じる</button></div>
+  </dialog>
+  <header class="toolbar">
+    <div id="mobile-tools-toggle" class="mobile-only mobile-tools-toggle" role="button" tabindex="0" aria-controls="tool-palette" aria-expanded="false">ツール</div>
+    <div class="toolbar-row" aria-label="ファイルと編集">
+    <div class="toolbar-group" aria-label="プロジェクトファイル">
+    <button id="new-project" data-compact-label="新規">新規プロジェクト</button>
+    <button id="open-project" type="button">開く…</button>
+    <button id="open-tja" type="button" data-compact-label="TJA">TJAを開く…</button>
+    <button id="save-project" type="button" title="保存 (Ctrl/Cmd+S)" disabled>保存</button>
+    <button id="save-project-as" type="button" title="名前を付けて保存…" data-compact-label="別名" disabled>別名保存…</button>
+    <button id="export-project" type="button" title="TJA・OGGを書き出す（フォルダー／ZIPを選択）" data-compact-label="出力" disabled>書き出し…</button>
+    <button id="export-chart-image" type="button" title="TJA Tools形式の譜面画像をPNGで保存" data-compact-label="画像" disabled>譜面画像…</button>
+    <button id="record-video" type="button" title="撮影ウィンドウでジャケットを選び、オート演奏を動画にする（1080p / 60fps）" data-compact-label="撮影" disabled>撮影…</button>
+    </div>
+    <div class="toolbar-group" aria-label="編集">
+    <details id="settings-menu" class="edit-menu">
+      <summary>⚙ 設定</summary>
+      <div class="edit-menu-items">
+        <button id="open-key-config" type="button">キー設定（カスタマイズ）…</button>
+        <button id="open-shortcut-settings" type="button">ショートカット（カスタマイズ）…</button>
+        <button id="open-preview-sound-settings" type="button">プレビュー効果音…</button>
+        <button id="open-score-settings" type="button">スコア設定…</button>
+        <button id="open-analysis" type="button">自動BPM・OFFSET・無音カット…</button>
+        
+      </div>
+    </details>
+    <button id="open-audio-editor" type="button" data-compact-label="音源" disabled>音源編集</button>
+    <button id="open-auto-chart" type="button" data-compact-label="採譜" title="自動採譜：選択範囲または曲全体からドン・カッを生成" disabled>自動採譜</button>
+    <button id="open-help" class="toolbar-help" type="button" title="操作ガイドを開く (F1)" aria-label="操作ガイドを開く">?</button>
+    </div>
+    </div>
+    <div class="toolbar-row navigation-row" aria-label="ツール・難易度・履歴">
+    <span class="dan-group"><span class="dan-group-label">段位道場</span><button id="open-dan-editor" type="button" title="段位道場を作成">段位</button></span>
+    <nav id="difficulty-tabs" class="difficulty-tabs" aria-label="編集する難易度"></nav>
+    <div class="toolbar-group course-controls" aria-label="編集中の難易度設定">
+      <strong id="current-course-label">--</strong>
+      <label><span class="course-level-label">LEVEL</span><input id="course-level" type="number" min="1" step="1" inputmode="numeric" aria-label="編集中の難易度のLEVEL" disabled></label>
+      <button id="delete-course" type="button" data-compact-label="削除" disabled>この難易度を削除…</button>
+      <button id="generate-lower-courses" type="button" data-compact-label="下位生成" disabled>下位譜面を生成…</button>
+    </div>
+    <div class="toolbar-group history-controls" aria-label="編集履歴">
+    <button id="undo" type="button" title="Undo (Ctrl+Z)" data-compact-label="戻す" disabled>元に戻す</button>
+    <button id="redo" type="button" title="Redo (Ctrl+Shift+Z)" data-compact-label="進む" disabled>やり直す</button>
+    </div>
+    </div>
+  </header>
+
+  <button id="mobile-palette-scrim" class="mobile-only mobile-palette-scrim" type="button" aria-label="ツールパネルを閉じる" tabindex="-1"></button>
+  <aside id="tool-palette" class="tool-palette" aria-label="編集ツール">
+    <div class="palette-primary">
+    <section id="project-info-panel" class="palette-project-info" aria-labelledby="project-info-heading">
+      <h2 id="project-info-heading">SONG INFO</h2>
+      <form id="project-info-form">
+        <label>曲名 <input id="project-info-title" required disabled></label>
+        <label>サブタイトル <input id="project-info-subtitle" disabled></label>
+        <label>ジャンル <select id="project-info-genre" aria-label="プロジェクトのジャンル" disabled></select></label>
+        <label>基本BPM <input id="project-info-bpm" type="number" min="0.001" step="any" required disabled></label>
+        <label>OFFSET <input id="project-info-offset" type="number" step="any" required disabled></label>
+      <label>レベル <input id="project-info-level" type="number" min="1" step="1" required disabled></label>
+        <p id="project-info-error" class="error"></p>
+        <button id="edit-project-info" type="submit" disabled>変更を適用</button>
+      </form>
+    </section>
+
+    <section>
+      <h2>NOTES</h2>
+      <nav class="palette-grid note-tools" aria-label="ノーツツール">
+        <button type="button" data-note-tool="smallDon" aria-pressed="true" title="小ドン"><span class="note-icon don small" aria-hidden="true"></span><span>ドン</span></button>
+        <button type="button" data-note-tool="smallKa" aria-pressed="false" title="小カッ"><span class="note-icon ka small" aria-hidden="true"></span><span>カッ</span></button>
+        <button type="button" data-note-tool="bigDon" aria-pressed="false" title="大ドン"><span class="note-icon don big" aria-hidden="true"></span><span>大ドン</span></button>
+        <button type="button" data-note-tool="bigKa" aria-pressed="false" title="大カッ"><span class="note-icon ka big" aria-hidden="true"></span><span>大カッ</span></button>
+        <button type="button" data-note-tool="smallRoll" aria-pressed="false" title="小連打"><span class="note-icon roll small" aria-hidden="true"></span><span>連打</span></button>
+        <button type="button" data-note-tool="bigRoll" aria-pressed="false" title="大連打"><span class="note-icon roll big" aria-hidden="true"></span><span>大連打</span></button>
+        <button type="button" data-note-tool="balloon" aria-pressed="false" title="風船"><span class="note-icon balloon" aria-hidden="true"></span><span>風船</span></button>
+        <button type="button" data-note-tool="bomb" aria-pressed="false" title="爆弾音符 (C)"><span class="note-icon bomb" aria-hidden="true">×</span><span>爆弾</span></button>
+        <button id="step-rest" type="button" title="空白送り (O)" disabled hidden><span class="tool-symbol" aria-hidden="true">−</span><span>空白</span></button>
+      </nav>
+      <nav class="palette-grid selection-tools" aria-label="選択・消去ツール">
+        <button id="erase-tool" type="button" aria-pressed="false" title="ノーツ・EVENT・小節線を消去（タッチ・ペン対応、Eキーと同じ）"><span class="tool-symbol" aria-hidden="true">×</span><span>ERASE</span></button>
+        <button id="range-tool" type="button" aria-pressed="false" title="ドラッグで範囲選択。左右端で長さを調整、中央上で内部ノーツを移動。表示の端に近づけると自動スクロール"><span class="tool-symbol" aria-hidden="true">▣</span><span>RANGE</span></button>
+      </nav>
+      <input id="balloon-count" type="hidden" value="1">
+    </section>
+    <section>
+      <h2>EVENT</h2>
+      <nav class="palette-grid event-tools" aria-label="EVENTツール">
+        <button type="button" data-event-tool="bpmChange" aria-pressed="false">BPM</button>
+        <button type="button" data-event-tool="scrollChange" aria-pressed="false">SCROLL</button>
+        <button type="button" data-event-tool="measureChange" aria-pressed="false">MEASURE</button>
+        <button type="button" data-event-tool="delay" aria-pressed="false">DELAY</button>
+        <button type="button" data-event-tool="gogo" aria-pressed="false">GOGO</button>
+        <button type="button" data-event-tool="sudden" aria-pressed="false">SUDDEN</button>
+        <button type="button" data-event-tool="direction" aria-pressed="false">DIRECTION</button>
+        <button type="button" data-event-tool="senoteChange" aria-pressed="false">SENOTE</button>
+        <button type="button" data-event-tool="lyric" aria-pressed="false">LYRIC</button>
+        <button id="open-branch-editor" type="button" aria-pressed="false" disabled>BRANCH</button>
+      </nav>
+    </section>
+    <section>
+      <button id="barline-tool" class="palette-wide" type="button" aria-pressed="false"><span class="barline-icon" aria-hidden="true"></span><span>BARLINE</span></button>
+    </section>
+    </div>
+    <section id="tool-help-panel" class="tool-detail-panel" aria-label="選択したツールの機能と使い方" aria-live="polite" data-tool="basic">
+      <h2 id="tool-help-title">基本操作</h2>
+      <p id="tool-help-description">↑／↓でグリッドを変更、←／→で位置を移動します。</p>
+      <p id="tool-help-usage">Spaceで再生／一時停止。ノーツやイベントを選ぶと配置キーを表示します。</p>
+      <p id="tool-help-keys"></p>
+      <label class="export-bomb-setting" id="export-bomb-setting" hidden>爆弾を書き出しに反映
+        <input id="export-include-bombs" type="checkbox" checked>
+      </label>
+      <div id="scroll-detail-panel" hidden aria-label="SCROLLの詳細設定">
+        <label>配置する種類<select id="scroll-detail-choice" aria-label="SCROLLの種類"></select></label>
+      </div>
+      <div id="editor-tool-detail" hidden></div>
+    </section>
+  </aside>
+
+  <section id="audio-editor-view" class="audio-editor-view" hidden aria-label="音源編集">
+    <header class="audio-editor-header">
+      <button id="audio-editor-back" type="button">← 変更せず戻る</button>
+      <h1>音源編集</h1>
+      <output id="audio-editor-time">再生位置 0.000 s / 0.000 s</output>
+    </header>
+    <div class="audio-editor-overview-group">
+      <strong title="Overview">曲全体</strong>
+      <div class="audio-editor-overview-wrap">
+        <canvas id="audio-editor-overview" aria-label="曲全体のOverview波形。クリックでSeek、表示範囲をドラッグしてDetailを移動"></canvas>
+      </div>
+    </div>
+    <div class="audio-detail-toolbar" aria-label="Detail波形の横方向倍率">
+      <strong title="Detail">拡大表示</strong>
+      <button id="audio-detail-zoom-out" type="button" aria-label="Detailを縮小">−</button>
+      <input id="audio-detail-zoom" type="range" min="1" max="64" step="1" value="1" aria-label="Detail横方向倍率">
+      <output id="audio-detail-zoom-readout">1×</output>
+      <button id="audio-detail-zoom-in" type="button" aria-label="Detailを拡大">＋</button>
+    </div>
+    <div class="audio-editor-waveform-wrap">
+      <canvas id="audio-editor-waveform" aria-label="拡大可能なDetail波形、Cut選択、FadeとCrossfade"></canvas>
+    </div>
+    <input id="audio-detail-pan" class="audio-detail-pan" type="range" min="0" max="0" step="0.001" value="0" aria-label="Detail表示位置">
+    <div class="audio-cut-actions">
+      <div class="audio-selection-shortcuts"><button id="audio-selection-all" type="button" title="現在のトリム開始から終了までを選択">全体を選択</button><button id="audio-selection-clear" type="button" disabled>選択解除</button><button id="audio-selection-zoom" type="button" disabled>選択範囲を拡大</button></div>
+      <output id="audio-cut-selection">Cut範囲を波形上でドラッグして選択</output>
+      <label>開始 <input id="audio-selection-start" type="number" min="0" step="0.001" inputmode="decimal"> s</label>
+      <button id="audio-selection-start-here" type="button">選択開始をここに</button>
+      <label>終了 <input id="audio-selection-end" type="number" min="0" step="0.001" inputmode="decimal"> s</label>
+      <button id="audio-selection-end-here" type="button">選択終了をここに</button>
+      <details class="audio-selection-fine"><summary>境界を微調整（Shiftで1ms）</summary>
+        <button id="audio-selection-start-back" type="button" title="-10ms（Shift: -1ms）">開始 −10ms</button><button id="audio-selection-start-forward" type="button" title="+10ms（Shift: +1ms）">開始 ＋10ms</button>
+        <button id="audio-selection-end-back" type="button" title="-10ms（Shift: -1ms）">終了 −10ms</button><button id="audio-selection-end-forward" type="button" title="+10ms（Shift: +1ms）">終了 ＋10ms</button>
+      </details>
+      <button id="audio-selection-play" type="button" disabled>選択範囲を再生</button>
+      <button id="audio-cut-selection-apply" type="button" disabled>選択区間をカット</button>
+    </div>
+    <div id="audio-cut-list" class="audio-cut-list" aria-label="途中Cut一覧"></div>
+    <section id="audio-cut-inspector" class="audio-cut-inspector" hidden aria-label="選択したCutの設定">
+      <strong id="audio-cut-inspector-title">Cut</strong>
+      <label>Cut開始 <span><input id="selected-cut-start" type="number" min="0" step="0.001" inputmode="decimal"> s</span></label>
+      <label>Cut終了 <span><input id="selected-cut-end" type="number" min="0" step="0.001" inputmode="decimal"> s</span></label>
+      <label>削除時間 <output id="selected-cut-duration">0.000 s</output></label>
+      <label>Crossfade <button id="selected-cut-crossfade-toggle" type="button" aria-pressed="true">ON</button></label>
+      <label>Crossfade長 <span><input id="selected-cut-crossfade-ms" type="number" min="0" max="1000" step="1" inputmode="numeric"> ms</span></label>
+    </section>
+    <input id="audio-editor-position" class="audio-editor-position" type="range" min="0" max="1" step="0.001" value="0" aria-label="音源編集の再生位置">
+    <div class="audio-editor-transport">
+      <button id="audio-editor-play" type="button">▶ 再生</button>
+      <button id="audio-editor-stop" type="button">■ 停止</button>
+      <button id="audio-editor-undo" type="button" disabled>元に戻す</button>
+      <button id="audio-editor-redo" type="button" disabled>やり直す</button>
+      <span class="audio-editor-key-help">Space: 再生 / 一時停止</span>
+      <label class="compact-check"><input id="audio-loop-selection" type="checkbox">選択範囲をループ</label>
+      <button id="audio-compare-original" type="button">原音を比較試聴</button>
+    </div>
+    <nav class="audio-panel-nav" aria-label="音源編集の操作"><button type="button" data-audio-tab="trim" aria-pressed="true">カット・フェード</button><button type="button" data-audio-tab="sound" aria-pressed="false">テンポ・音程・EQ</button><button type="button" data-audio-tab="mix" aria-pressed="false">曲の接続</button></nav>
+    <section id="audio-dj-panel" class="audio-dj-panel" hidden>
+      <article class="audio-tool-card"><h2>テンポ・音程</h2>
+        <label>テンポ <input id="audio-dj-tempo" type="range" min="50" max="200" step="1" value="100"><output id="audio-dj-tempo-value">100%</output></label>
+        <label>目標BPM <input id="audio-dj-target-bpm" type="number" min="1" step="any" value="120"></label><button id="audio-dj-set-bpm" type="button">BPMからテンポを設定</button>
+        <label>音程 <input id="audio-dj-pitch" type="range" min="-12" max="12" step="0.5" value="0"><output id="audio-dj-pitch-value">0 半音</output></label>
+        <p>テンポと音程を個別に調整し、試聴と書き出しに反映します。テンポを変えると音源の長さも変わります。</p>
+      </article>
+      <article class="audio-tool-card"><h2>イコライザー・音量</h2>
+        <label>プリセット <select id="audio-dj-preset"><option value="flat">フラット</option><option value="bass">低音を強調</option><option value="vocal">ボーカルを前へ</option><option value="bright">高音を明るく</option></select></label>
+        <label>低域 <input id="audio-dj-low" type="range" min="-12" max="12" step="0.5" value="0"><output id="audio-dj-low-value">0 dB</output></label>
+        <label>中域 <input id="audio-dj-mid" type="range" min="-12" max="12" step="0.5" value="0"><output id="audio-dj-mid-value">0 dB</output></label>
+        <label>高域 <input id="audio-dj-high" type="range" min="-12" max="12" step="0.5" value="0"><output id="audio-dj-high-value">0 dB</output></label>
+        <label class="compact-check"><input id="audio-dj-normalize" type="checkbox">最大音量を自動調整（ピーク −1 dB）</label>
+        <button id="audio-dj-reset" type="button">テンポ・音程・EQをリセット</button>
+      </article>
+      <output id="audio-dj-status" aria-live="polite"></output>
+    </section>
+    <section id="audio-mix-panel" class="audio-dj-panel" hidden>
+      <article class="audio-tool-card"><h2>次の曲をつなぐ</h2><button id="audio-mix-choose" type="button">追加する音源を選択</button><output id="audio-mix-name">未選択</output>
+        <label>使用開始 <input id="audio-mix-start" type="number" min="0" step="0.001" value="0"> 秒</label><label>使用終了 <input id="audio-mix-end" type="number" min="0" step="0.001" value="0"> 秒</label>
+        <label>追加曲のBPM <input id="audio-mix-bpm" type="number" min="1" step="any" value="120"></label><button id="audio-mix-match" type="button">編集中のBPMに合わせる</button>
+        <label>追加曲のテンポ <input id="audio-mix-tempo" type="number" min="0.5" max="2" step="0.01" value="1"> 倍</label>
+      </article>
+      <article class="audio-tool-card"><h2>つなぎ方</h2><label>クロスフェード <input id="audio-mix-crossfade" type="number" min="0" max="30" step="0.1" value="2"> 秒</label>
+        <label>カーブ <select id="audio-mix-curve"><option value="equalPower">音量感を保つ</option><option value="linear">直線で切り替え</option></select></label>
+        <canvas id="audio-mix-curve-preview" width="460" height="100" aria-label="2曲の音量カーブ"></canvas>
+        <button id="audio-mix-audition" type="button" disabled>つなぎを試聴</button><button id="audio-mix-apply" type="button" disabled>接続して音源に適用</button>
+        <p>編集中の音源の末尾に追加します。元ファイルを残して新しいWAVを作り、1回の元に戻す操作で接続前へ戻せます。</p>
+      </article><output id="audio-mix-status" aria-live="polite"></output>
+    </section>
+    <div class="audio-editor-settings">
+      <label>トリム開始 <span><input id="audio-trim-start" type="number" min="0" step="0.001" inputmode="decimal"> s</span></label>
+      <label>トリム終了 <span><input id="audio-trim-end" type="number" min="0" step="0.001" inputmode="decimal"> s</span></label>
+      <label>音量 <span class="audio-gain-row"><input id="audio-edit-gain" type="range" min="0" max="1000" step="1" value="100"><output id="audio-edit-gain-readout">100%</output></span></label>
+      <label>小さい音源を程よい大きさに <button id="audio-edit-auto-gain" hidden inert aria-hidden="true" type="button">音量を上げる</button></label>
+      <label>フェードイン <span><input id="audio-fade-in" type="number" min="0" step="0.001" inputmode="decimal"> s</span></label>
+      <label>フェードアウト <span><input id="audio-fade-out" type="number" min="0" step="0.001" inputmode="decimal"> s</span></label>
+      <label>カット境界をなめらかにする <button id="audio-edge-fade-toggle" type="button" aria-pressed="true">ON</button></label>
+      <label>境界のフェード長 <span><input id="audio-edge-fade-ms" type="number" min="0" max="1000" step="1" inputmode="numeric"> ms</span></label>
+      <p id="audio-editor-error" class="error"></p>
+    </div>
+    <div class="audio-editor-actions">
+      <button id="audio-editor-cancel" type="button">キャンセル</button>
+      <button id="audio-editor-apply" type="button">変更を適用して戻る</button>
+    </div>
+  </section>
+
+  <main>
+    <section class="preview"><div class="preview-header"><button class="fold">▾ プレビュー</button>
+        <label id="branch-preview-controls" hidden>分岐Preview <select id="branch-preview-route"><option value="normal">Normal</option><option value="expert">Expert</option><option value="master">Master</option><option value="all">3譜面同時</option></select></label>
+      <output id="branch-edit-state" hidden>共通譜面を編集中</output>
+      <label>比較 <select id="compare-difficulty" aria-label="比較用難易度"></select></label>
+      <label class="comparison-audio-control" title="曲は共通で再生し、プレビューの打音を切り替えます">音声 <select id="compare-audio" aria-label="比較プレビューの音声" disabled><option value="both">両方</option><option value="split">上：右耳／下：左耳</option><option value="first">1つ目のみ</option></select></label>
+      <button id="compare-preview-toggle" type="button" aria-pressed="false">2つ目を表示</button>
+      <small>左右の暗部は実機表示範囲外の目安（スキン差あり）</small>
+      <div class="project-summary" aria-label="プロジェクト状態">
+        <span id="extension-target" hidden>対象: OpenTaiko v0.6.0.108</span>
+        <span id="project-title">プロジェクトなし</span>
+        <output id="dirty-indicator" class="dirty-indicator" aria-live="polite"></output>
+      </div>
+      </div>
+      <div class="preview-stage">
+        <canvas id="preview-timeline" aria-label="譜面プレビュー：音符・小節線・GOGO"></canvas>
+      </div>
+      <div id="compare-preview-stage" class="preview-stage compare-preview-stage" hidden>
+        <span id="compare-preview-label">比較・編集不可</span>
+        <canvas id="compare-preview-timeline" aria-label="別難易度の比較プレビュー（編集不可）"></canvas>
+      </div>
+    </section>
+    <section class="offset-panel" aria-label="OFFSET調整とプレビュー音声">
+      <div class="offset-audio-row">
+        <strong>OFFSET</strong>
+        <button id="offset-minus" type="button" title="-10ms (Shift: -1ms)">−10ms</button>
+        <input id="offset-value" type="number" step="0.001" inputmode="decimal" aria-label="OFFSET（秒）">
+        <button id="offset-plus" type="button" title="+10ms (Shift: +1ms)">+10ms</button>
+        <div class="preview-audio-controls" aria-label="プレビュー音量">
+          <label class="volume-control">曲音量<input id="preview-song-volume" type="range" min="0" max="1" step="0.01" value="0.8" aria-label="曲の音量"></label>
+          <label class="volume-control">ノーツ音量<input id="preview-note-volume" type="range" min="0" max="1" step="0.01" value="0.8" aria-label="ノーツ効果音の音量"></label>
+          <button id="metronome-toggle" type="button" aria-pressed="false">メトロノーム: OFF</button>
+          <label class="volume-control">メトロノーム音量<input id="metronome-volume" type="range" min="0" max="1" step="0.01" value="0.8" aria-label="メトロノーム音量"></label>
+        </div>
+      </div>
+      <div class="barline-origin-controls assist-controls" aria-label="小節の頭の調整"><strong>小節の頭</strong><button id="barline-head-earlier" type="button" title="先頭のBPMの四分音符1拍分、小節線を前へ">1拍前へ</button><button id="barline-head-later" type="button" title="先頭のBPMの四分音符1拍分、小節線を後ろへ">1拍後ろへ</button><span>ノーツは動かしません</span></div>
+      <div class="chart-readouts" aria-label="譜面情報">
+        <output id="note-count">ノーツ数: 0</output>
+        <output id="measure-count">小節数: 0</output>
+        <output id="note-density" title="（打音数−1）÷最初の打音から最後の打音までの秒数。風船と連打は除外">密度: 0.00 打/秒</output>
+        <output id="base-bpm-display">基本BPM: --</output>
+      </div>
+      <div class="assist-controls">
+        <label title="曲の再生速度">速度 <input id="playback-rate" type="range" min="0.5" max="1" step="0.05" value="1"><output id="playback-rate-value">1.00×</output></label>
+        <button id="open-demo-start" type="button">DEMOSTART / 試聴…</button>
+        <button id="playback-preserve-pitch" type="button" aria-pressed="true">ピッチ補正: ON</button>
+        <button id="practice-toggle" type="button" aria-pressed="false">試し叩き…</button>
+      </div>
+      <details id="realtime-input-section" class="realtime-input-section" open>
+      <summary id="realtime-controls-fold">リアルタイム入力 <output id="realtime-input-state">OFF</output></summary>
+      <div class="realtime-input-controls" aria-label="リアルタイム入力">
+        <button id="realtime-input-toggle" type="button" aria-pressed="false">リアルタイム入力: OFF</button>
+        <label>入力遅延補正
+          <input id="realtime-input-latency" type="number" min="-200" max="200" step="1" value="0" inputmode="numeric" aria-label="リアルタイム入力遅延補正（ミリ秒）">
+          <span>ms（+ = 早める）</span>
+        </label>
+        <span id="realtime-key-help" class="realtime-key-help">V = 左カッ · B = 左ドン · 、 = 右ドン · 。 = 右カッ</span>
+      </div>
+      </details>
+    </section>
+    <section class="timeline-toolbar" aria-label="タイムラインの再生、グリッド、拡大縮小">
+      <button id="play-from-start" type="button" title="譜面先頭へ戻す（再生しません）">先頭から</button>
+      <button id="play">再生</button>
+      <button id="stop" type="button">停止</button>
+      <button id="loop-toggle" type="button" aria-pressed="false" aria-controls="loop-details" title="ループ再生と設定">↻ ループ OFF</button>
+      <output id="time-readout">再生位置 0.000 s / 0.000 s</output>
+      <div class="timeline-grid-controls" aria-label="ノーツグリッド設定">
+        <label class="grid-division">分割
+          <select id="grid-division" aria-label="グリッド分割数">
+            <option value="3">1/3</option><option value="4">1/4</option><option value="6">1/6</option>
+            <option value="8">1/8</option><option value="12">1/12</option><option value="16" selected>1/16</option>
+            <option value="24">1/24</option><option value="32">1/32</option><option value="48">1/48</option>
+          </select>
+        </label>
+        <div class="grid-width-buttons" aria-label="グリッド幅を変更"><button id="grid-finer" type="button" title="グリッドを細かくする（↑）" aria-label="グリッドを細かくする" disabled>↑</button><button id="grid-coarser" type="button" title="グリッドを広くする（↓）" aria-label="グリッドを広くする" disabled>↓</button></div>
+        <details id="special-grid-tools" class="special-grid-tools">
+          <summary id="special-grid-summary">特殊グリッド</summary>
+          <div class="special-grid-panel">
+            <label>分割 <select id="special-grid-preset" aria-label="特殊グリッド"><option value="off">通常グリッド</option><option value="14">1/14</option><option value="20">1/20</option><option value="custom">数値で指定</option></select></label>
+            <label>何分音符 <input id="special-grid-division" type="number" min="1" step="1" value="20" aria-label="特殊グリッドの分割数">分</label>
+            <label><input id="special-grid-dotted" type="checkbox">付点（間隔を1.5倍）</label>
+            <button id="special-grid-apply" type="button">現在位置から適用</button>
+            <output id="special-grid-range">適用範囲：現在位置の小節から4小節分</output>
+            <p>分割数を入力すると、現在位置の小節から4小節先の小節線まで適用します。その範囲外は通常グリッドです。</p>
+          </div>
+        </details>
+      </div>
+      <div class="timeline-controls" aria-label="タイムラインの移動">
+        <button id="zoom-out" type="button" aria-label="縮小" title="縮小">−</button>
+        <button id="zoom-reset" type="button" aria-label="表示倍率を100%に戻す" title="表示倍率を100%に戻す">100%</button>
+        <button id="zoom-in" type="button" aria-label="拡大" title="拡大">＋</button>
+        <label class="zoom-slider-label">倍率
+          <input id="zoom-slider" type="range" min="20" max="300" step="1" value="100" aria-label="タイムライン表示倍率">
+        </label>
+      </div>
+      <div class="waveform-scale-controls" aria-label="波形の縦表示倍率">
+        <button id="waveform-scale-down" type="button" aria-label="波形倍率を下げる">−</button>
+        <label>波形倍率
+          <input id="waveform-scale" type="range" min="25" max="300" step="5" value="100" aria-label="波形の縦表示倍率">
+        </label>
+        <button id="waveform-scale-up" type="button" aria-label="波形倍率を上げる">＋</button>
+        <output id="waveform-scale-readout">100%</output>
+      </div>
+      <span id="shortcut-help" class="shortcut-help">Ctrl/Cmd+ホイール: 拡大縮小 · Space+ドラッグ: 移動 · E+ドラッグ: 消去</span>
+    </section>
+    <section class="playback-position" aria-label="位置">
+      <label class="position-control playback-position-control">位置
+        <input id="playback-position" type="range" min="0" max="1" step="0.001" value="0" aria-label="再生・タイムライン位置">
+      </label>
+    </section>
+    <section class="timeline-lane waveform-lane" data-lane="waveform">
+      <span class="lane-title">波形 · タップで再生位置変更 · ドラッグで移動</span>
+      <canvas id="waveform-timeline" aria-label="波形タイムライン"></canvas>
+    </section>
+    <section class="timeline-lane note-lane" data-lane="note">
+      <span class="lane-title">ノーツ編集</span>
+      <canvas id="timeline" aria-label="ノーツ編集と小節番号"></canvas>
+    </section>
+    <section class="event-lane timeline-lane" data-lane="event">
+      <span class="lane-title">イベント</span>
+      <canvas id="event-timeline" aria-label="EVENT編集タイムライン"></canvas>
+      <form id="event-inline-editor" class="event-inline-editor" hidden>
+        <strong id="event-inline-label">EVENT</strong>
+        <select id="event-scroll-mode" aria-label="スクロールモード" hidden><option value="normal">NMSCROLL（通常）</option><option value="bms">BMSCROLL</option><option value="hb">HBSCROLL</option></select>
+        <span id="event-jpos" hidden>
+          <label>移動時間 s <input id="event-jpos-duration" type="number" min="0" step="any" value="1"></label>
+          <label>横移動 px <input id="event-jpos-x" type="number" step="any" value="100"></label>
+          <label>縦移動 px <input id="event-jpos-y" type="number" step="any" value="0"></label>
+          <select id="event-jpos-direction" aria-label="移動方向"><option value="1">加算（右・下）</option><option value="0">反転（左・上）</option></select>
+        </span>
+        <span id="event-sudden" hidden>
+          <label>表示開始 s <input id="event-sudden-show" type="number" step="any" value="2"></label>
+          <label>移動待機 s <input id="event-sudden-move" type="number" step="any" value="1"></label>
+        </span>
+        <select id="event-direction" aria-label="ノーツ進行方向" hidden>
+          <option value="0">0: 右から</option><option value="1">1: 上から</option><option value="2">2: 下から</option>
+          <option value="3">3: 右上から</option><option value="4">4: 右下から</option><option value="5">5: 左から</option>
+          <option value="6">6: 左上から</option><option value="7">7: 左下から</option>
+        </select>
+        <select id="event-senote" aria-label="SE表示番号" hidden>
+          <option value="1">1 ドン</option><option value="2">2 ド</option><option value="3">3 コ</option><option value="4">4 カッ</option>
+          <option value="5">5 カ</option><option value="6">6 ドン(大)</option><option value="7">7 カッ(大)</option><option value="8">8 連打</option>
+          <option value="9">9 ー</option><option value="10">10 ーっ!!</option><option value="11">11 連打(大)</option><option value="12">12 ふうせん</option>
+        </select>
+        <input id="event-lyric" type="text" aria-label="歌詞" placeholder="歌詞" hidden>
+        <span id="event-value-control" class="event-value-control">
+          <button id="event-value-decrement" class="event-value-step" type="button" aria-label="SCROLLを減らす（3未満は0.1、3以上は1.0）" hidden>▼</button>
+          <input id="event-value" type="number" step="any" aria-label="EVENTの値">
+          <button id="event-value-increment" class="event-value-step" type="button" aria-label="SCROLLを増やす（3未満は0.1、3以上は1.0）" hidden>▲</button>
+        </span>
+        <input id="event-numerator" type="number" min="1" max="32" step="1" aria-label="拍子の分子" hidden>
+        <select id="event-denominator" aria-label="拍子の分母" hidden>
+          <option>1</option><option>2</option><option selected>4</option><option>8</option><option>16</option><option>32</option>
+        </select>
+        <button type="submit">適用</button><button id="cancel-event-inline" type="button">キャンセル</button>
+      </form>
+    </section>
+    <section class="timeline-lane barline-lane" data-lane="barline">
+      <span class="lane-title">小節線</span>
+      <canvas id="barline-timeline" aria-label="小節線編集タイムライン"></canvas>
+    </section>
+    <section class="statusbar"><output id="edit-status" class="edit-status" aria-live="polite">プロジェクトを作成して編集を始めてください。</output></section>
+    <section id="selection-popup" class="selection-popup" hidden aria-label="選択項目の編集"><div id="inspector-content"></div></section>
+  </main>
+
+  <nav id="mobile-edit-actions" class="mobile-only mobile-edit-actions" aria-label="編集操作">
+    <button id="mobile-undo" type="button" disabled>戻す</button>
+    <button id="mobile-redo" type="button" disabled>進む</button>
+    <button id="mobile-cut" type="button" disabled>切取</button>
+    <button id="mobile-copy" type="button" disabled>コピー</button>
+    <button id="mobile-paste" type="button" disabled>貼付</button>
+    <button id="mobile-delete" type="button" disabled>削除</button>
+  </nav>
+
+  <button id="mobile-project-info-open" class="mobile-only" type="button">曲情報</button>
+
+  <dialog id="mobile-project-info-dialog" class="mobile-project-info-dialog">
+    <div class="mobile-project-info-header"><strong>プロジェクト情報</strong><button id="mobile-project-info-close" type="button">閉じる</button></div>
+    <div id="mobile-project-info-host"></div>
+  </dialog>
+
+  <dialog id="new-project-dialog">
+    <form id="new-project-form">
+      <h2>新規おに譜面</h2>
+      <p id="new-project-settings-hint" class="new-project-settings-hint">これらの設定は作成後も変更できます。曲情報は右上の「曲情報」、拍子は「MEASURE」から調整できます。</p>
+      <div class="audio-row"><button id="choose-audio" type="button" title="WAV / MP3 / Ogg Vorbis / MP4・MKV音声">音源ファイルを選ぶ…</button><span id="audio-name">音源未選択</span><small>WAV・MP3・OGG・MP4・MKVに対応</small></div>
+      <div id="system-recording-row" class="system-recording-row">
+        <button id="record-system-audio" type="button" aria-pressed="false">● PCの音を録音</button>
+        <output id="recording-status" aria-live="polite"></output>
+        <small>PCで流れている音を録音します（最大30分）。マイクは含みません。前後の完全な無音は自動カットします。</small>
+      </div>
+      <label>曲名 <input name="title" required></label>
+      <div id="title-from-audio-row" class="title-from-audio-row"><button id="use-audio-name-as-title" type="button" disabled>ファイル名をタイトルに使う</button></div>
+      <label>サブタイトル <input name="subtitle"></label>
+      <label>ジャンル <select name="genre" aria-label="ジャンル"></select></label>
+      <label>基本BPM <input name="bpm" type="number" min="0.001" step="any" value="120" required></label>
+      <label>基本拍子 <span><input name="measureNumerator" type="number" min="1" max="32" step="1" value="4" required aria-label="基本拍子の分子"> / <select name="measureDenominator" aria-label="基本拍子の分母"><option>1</option><option>2</option><option selected>4</option><option>8</option><option>16</option><option>32</option></select></span></label>
+      <label>OFFSET <input name="offset" type="number" step="0.001" value="0" required></label>
+      <p id="new-project-tempo-status" role="status" aria-live="polite">音源を選ぶとBPM・OFFSETを自動設定します。</p>
+      
+      <label>レベル <input name="level" type="number" min="1" step="1" value="5" required></label>
+      <p id="project-error" class="error"></p>
+      <div class="dialog-actions"><button id="cancel-new-project" type="button">キャンセル</button><button type="submit">作成</button></div>
+    </form>
+  </dialog>
+  <dialog id="auto-chart-dialog" class="auto-chart-dialog">
+    <form id="auto-chart-form">
+      <h2>自動採譜</h2>
+      <p class="help-muted">音の立ち上がり・音程・リズムから生成します。最後の弱い余韻は抑え、明確な打音を優先します。生成後はそのまま反映し、Ctrl+Zで戻せます。</p>
+      <p id="auto-chart-scope" class="auto-chart-scope"></p>
+      <p class="help-muted">密度・音取りの中心・ドンとカッの割り当て、瞬間密度の上限、連打・風船の使用を指定できます。リズムや展開は通常、自動判断に任せます。</p>
+      <div class="auto-chart-settings auto-chart-basic">
+        <label>主体となるリズム <select name="rhythmBase"><option value="auto">指定なし（自動）</option><option value="straight">16分（8分）主体</option><option value="triplet">24分（12分）主体</option></select></label>
+        <label>目標密度 <input name="density" type="range" min="0.5" max="12" step="0.5" value="6"><output id="auto-chart-density-value">6.0 打/秒</output></label>
+        <label class="auto-nps-control">瞬間密度の上限 <input name="maxNps" type="range" min="2" max="24" step="0.5" value="8"><output id="auto-chart-max-nps-value">基本BPMの16分</output></label>
+      </div>
+      <div class="assist-controls auto-chart-basic"><label><input name="useRolls" type="checkbox" checked>連打を使う</label><label><input name="useBalloons" type="checkbox" checked>風船を使う</label></div>
+      <fieldset class="auto-sound-mapping"><legend>拾う音と配色</legend>
+        <label>キック・低音 <select name="kick"><option value="don" selected>ドン</option><option value="ka">カッ</option><option value="auto">自動</option><option value="off">拾わない</option></select></label>
+        <label>スネア・中域の打音 <select name="snare"><option value="ka" selected>カッ</option><option value="don">ドン</option><option value="auto">自動</option><option value="off">拾わない</option></select></label>
+        <label>ハイハット・高域の打音 <select name="hihat"><option value="ka" selected>カッ</option><option value="don">ドン</option><option value="auto">自動</option><option value="off">拾わない</option></select></label>
+        <label>歌声・メロディー <select name="melody"><option value="auto" selected>前後の音程から自動</option><option value="don">ドン</option><option value="ka">カッ</option><option value="off">拾わない</option></select></label>
+        <small>複合の配色を任せたい打音は「自動」を選びます。指定した音色・音程の配色を優先し、70%補正が必要な場合だけ補正します。</small>
+      </fieldset>
+      <p id="auto-chart-effective-summary" class="help-muted"></p>
+      <details id="auto-chart-advanced-details" class="auto-chart-details">
+        <summary>追加の指定 <span id="auto-chart-advanced-summary" class="auto-chart-summary-value"></span></summary>
+        <p class="help-muted">狙いがある項目だけ調整してください。閉じても指定は適用されます。「すべてデフォルトに戻す」で基本項目を含めて戻せます。</p>
+        <div class="concept-choice"><label>音取りの中心 <select name="conceptSource" aria-label="コンセプトの音取り" aria-describedby="conceptSource-help"></select></label><p id="conceptSource-help" class="concept-choice-help"></p></div>
+      <fieldset class="auto-chart-concept"><legend>リズム・展開・配色の指定</legend>
+        <div class="auto-chart-settings">
+
+          <div class="concept-choice"><label>リズム <select name="conceptFamily" aria-label="コンセプトのリズム" aria-describedby="conceptFamily-help"></select></label><p id="conceptFamily-help" class="concept-choice-help"></p></div>
+          <div class="concept-choice"><label>展開 <select name="conceptShape" aria-label="コンセプトの展開" aria-describedby="conceptShape-help"></select></label><p id="conceptShape-help" class="concept-choice-help"></p></div>
+          <div class="concept-choice"><label>配色・運手 <select name="conceptPattern" aria-label="コンセプトの配色・運手" aria-describedby="conceptPattern-help"></select></label><p id="conceptPattern-help" class="concept-choice-help"></p></div>
+        </div>
+        <p class="help-muted">主体にしたい方針を指定します。音取りは歌や楽器の推定です。音のない位置を埋める指定ではありません。許可リズム・密度上限・固定配色は下の設定で独立して指定できます。</p>
+      </fieldset>
+      <details id="auto-chart-concept-details" class="auto-chart-details">
+        <summary>コンセプトの詳細 <span class="auto-chart-summary-value"></span></summary>
+        <div class="auto-chart-settings">
+          <div class="concept-choice"><label>リズムの指定 <select name="conceptPolicy" aria-label="リズムの指定の強さ" aria-describedby="conceptPolicy-help"></select></label><p id="conceptPolicy-help" class="concept-choice-help"></p></div>
+          <label>優先の強さ <input name="conceptStrength" type="range" min="0" max="100"><output data-concept-output="conceptStrength"></output></label>
+          <label>フレーズ長 <input name="conceptPhraseBars" type="number" min="2" max="8" step="1">小節</label>
+          <label title="生成後のコンセプト適合判定に使う比率です。">三連系の達成判定基準 <input name="conceptTripletTarget" type="range" min="0" max="100"><output data-concept-output="conceptTripletTarget"></output></label>
+          <label>厳格の許可細分 <input name="conceptPermitted" type="text" placeholder="空欄は標準（例：12,24）" maxlength="40"></label>
+          <div class="concept-choice"><label>細分アクセント <select name="conceptFine" aria-describedby="conceptFine-help"><option value="none">追加指定なし</option><option value="32">32分を局所的に許可</option><option value="48">48分を局所的に許可</option></select></label><p id="conceptFine-help" class="concept-choice-help"></p></div>
+          <label>アクセント割合上限 <input name="conceptFineShare" type="range" min="0" max="50"><output data-concept-output="conceptFineShare"></output></label>
+          <label>極短間隔の連続上限 <input name="conceptFineRun" type="number" min="1" max="8" step="1"></label>
+          <label>アクセントの根拠 <select name="conceptFineEvidence"><option value="strong">明確な独立発音のみ</option><option value="normal">通常の発音根拠</option></select></label>
+          <label>音取り役割の維持 <input name="conceptPersistence" type="range" min="0" max="100"><output data-concept-output="conceptPersistence"></output></label>
+          <label>モチーフの変奏 <input name="conceptVariation" type="range" min="0" max="100"><output data-concept-output="conceptVariation"></output></label>
+          <label>盛り上がり前の余白 <input name="conceptSpace" type="range" min="0" max="100"><output data-concept-output="conceptSpace"></output></label>
+          <label>変奏のシード <input name="conceptSeed" type="number" min="0" max="4294967295" step="1"></label>
+        </div>
+        <p class="help-muted">「自動」は既存のリズム判別、「優先」は指定を重視、「厳格」は候補の細分を制限します。12分厳格は標準で12分主体＋24分装飾。必要な細分を既存設定で許可していない場合は生成前に知らせます。音源に合う候補がなければ疎な結果になります。</p>
+        <label class="compact-check"><input name="conceptExperimental" type="checkbox">実験設定を有効にする（実聴しながら調整）</label>
+        <div class="auto-chart-settings">
+          <div class="concept-choice"><label>ジャンル補助 <select name="conceptGenre" aria-describedby="conceptGenre-help"><option value="none">なし</option><option value="jazzSwing">ジャズ・スウィング補助</option><option value="chiptune">チップチューン補助</option></select></label><p id="conceptGenre-help" class="concept-choice-help"></p></div>
+          <label>創作ノーツ許可量 <input name="conceptAdlib" type="range" min="0" max="100"><output data-concept-output="conceptAdlib"></output></label>
+        </div>
+        <p class="help-muted">ジャンルを自動識別する機能ではありません。アドリブも検出した独立発音の範囲だけで選びます。未知曲での聴感・演奏感は確認が必要です。</p>
+        <label class="concept-section-label">部分区間（上級者向けJSON）<textarea name="conceptSections" rows="4" maxlength="32000" aria-label="コンセプトの部分区間JSON"></textarea></label>
+        <p class="help-muted">整数tick、開始順、区間の重複なし。endTickは区間に含みません。例：[{"startTick":0,"endTick":768,"override":{"sourceFocus":"selective"}}]</p>
+      </details>
+
+
+      <details id="auto-chart-rhythm-details" class="auto-chart-details">
+        <summary>リズムと密度の上限</summary>
+        <div class="auto-chart-settings">
+          <label>配置グリッド <select name="grid"><option value="auto" selected>自動（許可したリズム）</option><option value="8">8分固定</option><option value="12">12分固定</option><option value="16">16分固定</option><option value="24">24分固定</option><option value="32">32分固定</option><option value="48">48分固定</option></select></label>
+        </div>
+        <fieldset class="auto-rhythm-options"><legend>自動判別で使用するリズム</legend>
+          <div class="assist-controls"><label><input name="rhythm8" type="checkbox">8分</label><label><input name="rhythm12" type="checkbox" checked>12分</label><label><input name="rhythm16" type="checkbox" checked>16分</label><label><input name="rhythm24" type="checkbox" checked>24分</label><label><input name="rhythm32" type="checkbox">32分</label><label><input name="rhythm48" type="checkbox">48分</label></div>
+          <div class="assist-controls"><button id="auto-chart-rhythm-16-24" type="button">16分＋24分だけ</button><button id="auto-chart-rhythm-12-16" type="button">12分＋16分だけ</button></div>
+        </fieldset>
+        <label class="compact-check"><input name="balanceColors" type="checkbox" checked>生成打音全体のドン・カッをそれぞれ70%以内に補正する</label>
+        <p class="help-muted">上限を超える近接打は間引き、埋め直しはしません。既存ノーツ・連打・風船は配色比率の対象外です。打音1つでは比率を満たせません。</p>
+      </details>
+      <details id="auto-chart-phrase-details" class="auto-chart-details">
+        <summary>複合と曲の展開</summary>
+        <div class="auto-chart-settings">
+          <label>複合の複雑さ <input name="complexity" type="range" min="0" max="100" value="50"><output id="auto-chart-complexity-value">50%</output></label>
+          <label>反復フレーズの変奏 <input name="variation" type="range" min="0" max="100" value="20"><output id="auto-chart-variation-value">20%</output></label>
+          <label>体力負荷の許容 <input name="stamina" type="range" min="0" max="100" value="50"><output id="auto-chart-stamina-value">50%</output></label>
+          <label>GOGOの密度強調 <input name="gogoBoost" type="range" min="0" max="100" value="35"><output id="auto-chart-gogo-value">35%</output></label>
+        </div>
+        <label class="compact-check"><input name="useGogo" type="checkbox" checked>配置済みGOGOを密度設計の手掛かりにする</label>
+        <label class="compact-check"><input name="kickPulse" type="checkbox" checked>キックの等間隔・4分→8分→16分などの加速を優先する</label>
+        <label class="compact-check"><input name="dynamicDensity" type="checkbox" checked>曲の活動量に合わせて密度を変える</label>
+        <label class="compact-check"><input name="phraseStructure" type="checkbox" checked>反復フレーズ・複合・運手を考慮して候補を比較する</label>
+        <label class="compact-check"><input name="buildUpSpace" type="checkbox">盛り上がり前の弱い小節に余白を作る</label>
+        <label>補助ノーツ <select name="arrangement"><option value="faithful" selected>検出した音だけから選ぶ</option><option value="hybrid">活動中の短い打音間を16分で補間する</option></select></label>
+        <p class="help-muted">GOGOでも音のない場所は埋めません。低密度ではキックを規則的に間引くため、目標密度を下回る場合があります。変奏0%では同じリズムのモチーフを揃えます。</p>
+      </details>
+      <details id="auto-chart-expression-details" class="auto-chart-details">
+        <summary>大音符・連打・音程の配色</summary>
+        <div class="auto-chart-settings">
+          <label>大音符の目安 <input name="bigNoteRatio" type="range" min="0" max="40" step="1" value="3"><output id="auto-chart-big-value">3%</output></label>
+          <label>低音はドン <input name="lowPitchHz" type="number" min="65" max="2000" value="220"> Hz 以下</label>
+          <label>高音はカッ <input name="highPitchHz" type="number" min="100" max="4000" value="880"> Hz 以上</label>
+        </div>
+        <p class="help-muted">大音符は周囲の発音より音圧が明確に大きい箇所から、目安の割合を上限に選びます。該当する強音がなければ増やしません。連打・風船は短い連続打音から選びます。主旋律は前後の音程で配色し、低音・高音の境界を優先します。</p>
+      </details>
+      <div class="auto-chart-settings auto-chart-tuning">
+        <label>難易度の目安 <select name="difficulty"><option value="0">自由設定</option><option value="8">おに ★8</option><option value="9">おに ★9</option><option value="10">おに ★10</option></select></label>
+
+        <label>メロディー重視 ↔ 伴奏重視 <input name="melodyBias" type="range" min="0" max="100" value="50" aria-label="伴奏重視度"><output id="auto-chart-melody-value">メロディー 50%／伴奏 50%</output></label>
+        <label>音取り重視 ↔ 楽しさ重視 <input name="playability" type="range" min="0" max="100" value="50"><output id="auto-chart-playability-value">50%</output></label>
+        <small>主旋律には歌と楽器を含みます。★は複合・負荷の生成方針の目安です。曲のLEVELや、選んだリズム・密度上限は変更しません。</small>
+      </div>
+      <label class="compact-check"><input name="recordDecisions" type="checkbox">候補・配色の判断を記録する（詳細解析用）</label>
+      </details>
+      <div class="auto-chart-apply-options">
+        <label>反映方法 <select name="mode"><option value="replace">採譜範囲の打音を置き換え</option><option value="merge">既存ノーツを残して追加</option></select></label>
+        <label class="compact-check"><input name="replaceLongs" type="checkbox">既存の連打・風船も作り直す（置換時）</label>
+      </div>
+      <details id="auto-chart-analysis" class="auto-chart-details" hidden>
+        <summary>前回の生成結果・品質の目安</summary>
+        <p id="auto-chart-analysis-scope" class="help-muted"></p>
+        <div id="auto-chart-report"></div>
+        <p id="auto-chart-diagnostics" class="help-muted"></p>
+        <p class="help-muted">平均密度は生成範囲全体。最大1／2／5／10秒は各区間の打数÷秒数。P95は1秒窓・0.25秒刻みです。運手・負荷は推定です。★や楽しさを保証する評価ではありません。音を確認しながら編集してください。</p>
+      </details>
+
+      <output id="auto-chart-status" aria-live="polite"></output><p id="auto-chart-error" class="error"></p>
+      <div class="dialog-actions"><button id="auto-chart-reset-all" type="button">すべてデフォルトに戻す</button><button id="auto-chart-close" type="button">閉じる</button><button id="auto-chart-cancel-analysis" type="button">解析を中止</button><button id="auto-chart-generate" type="button">曲全体を生成</button></div>
+    </form>
+  </dialog>
+  <dialog id="audio-ready-dialog">
+    <form method="dialog">
+      <h2>音源の準備が完了しました</h2>
+      <p>先にトリム・音量・フェードを調整できます。</p>
+      <div class="dialog-actions">
+        <button type="submit" value="continue">このまま譜面編集へ</button>
+        <button type="submit" value="edit">音源を編集する</button>
+      </div>
+    </form>
+  </dialog>
+  <dialog id="scroll-conflict-dialog">
+    <form method="dialog">
+      <h2>SCROLL変更を置き換えますか？</h2>
+      <p>貼り付け範囲にSCROLL変更があります。コピーしたSCROLLパターンに置き換えますか？</p>
+      <div class="dialog-actions"><button type="submit" value="cancel">キャンセル</button><button type="submit" value="replace">置き換え</button></div>
+    </form>
+  </dialog>
+  <dialog id="decision-dialog">
+    <form method="dialog">
+      <h2 id="decision-title">未保存の変更</h2>
+      <p id="decision-message"></p>
+      <p id="decision-notice" class="decision-notice" hidden><strong></strong></p>
+      <div class="dialog-actions">
+        <button id="decision-cancel" type="submit" value="cancel">キャンセル</button>
+        <button id="decision-discard" type="submit" value="discard">保存しない</button>
+        <button id="decision-save" type="submit" value="save">保存</button>
+      </div>
+    </form>
+  </dialog>
+  <dialog id="validator-dialog">
+    <form method="dialog">
+      <h2>書き出し前チェック</h2>
+      <div id="validator-issues" class="validator-issues"></div>
+      <div class="dialog-actions">
+        <button type="submit" value="cancel">キャンセル</button>
+        <button id="validator-continue" type="submit" value="continue">書き出しを続ける</button>
+      </div>
+    </form>
+  </dialog>
+  <dialog id="key-config-dialog" class="keyboard-settings-dialog">
+    <form id="key-config-form">
+      <h2>キーコンフィグ</h2>
+      <p>ドン・カッ、数字入力、イベント・小節線のキーを設定します。数字入力は配置するノーツも変更できます。割当ボタンを押してから目的のキーを入力してください。</p>
+      <div id="key-config-list" class="binding-list"></div>
+      <p id="key-config-error" class="error"></p>
+      <div class="dialog-actions">
+        <button id="reset-key-config" type="button">初期値に戻す</button>
+        <button id="cancel-key-config" type="button">キャンセル</button>
+        <button type="submit">適用</button>
+      </div>
+    </form>
+  </dialog>
+  <dialog id="shortcut-settings-dialog" class="keyboard-settings-dialog">
+    <form id="shortcut-settings-form">
+      <h2>ショートカット設定</h2>
+      <p>割当ボタンを押してからキーまたはキーの組み合わせを入力します。「解除」で未設定にもできます。</p>
+      <div id="shortcut-settings-list" class="binding-list"></div>
+      <details class="fixed-gesture-help">
+        <summary>マウス・ペン操作の固定修飾キー</summary>
+        <p>Ctrl/Cmd+ホイール: 横ズーム／Alt+ノーツクリック: スポイト／Alt+ドラッグ: 48分2tickスナップ／Shift+空ドラッグ: 範囲選択／Ctrl/Cmd+ノーツクリック: 複数選択／Shift+左右: グリッド単位の範囲選択／Shift+上下: 小節単位の範囲選択／選択中の左右: 移動プレビュー／Enter: 確定／Esc・Backspace・Delete: 選択解除</p>
+      </details>
+      <p id="shortcut-settings-error" class="error"></p>
+      <div class="dialog-actions">
+        <button id="reset-shortcut-settings" type="button">初期値に戻す</button>
+        <button id="cancel-shortcut-settings" type="button">キャンセル</button>
+        <button type="submit">適用</button>
+      </div>
+    </form>
+  </dialog>
+  <dialog id="preview-sound-settings-dialog" class="preview-sound-settings-dialog">
+    <form method="dialog">
+      <h2>プレビュー効果音</h2>
+      <p>自分で用意した Ogg Vorbis・WAV・MP3をアプリ専用領域へコピーして使用します。プロジェクトや書き出しファイルには含まれません。</p>
+      <div class="preview-sound-list">
+        <div class="preview-sound-row" data-preview-sound-row="don">
+          <strong>ドン</strong><span class="preview-sound-name">未指定（内蔵音／合成音）</span>
+          <button type="button" data-preview-sound-choose="don">選択…</button>
+          <button type="button" data-preview-sound-audition="don">試聴</button>
+          <button type="button" data-preview-sound-remove="don" disabled>解除</button>
+        </div>
+        <div class="preview-sound-row" data-preview-sound-row="ka">
+          <strong>カッ</strong><span class="preview-sound-name">未指定（内蔵音／合成音）</span>
+          <button type="button" data-preview-sound-choose="ka">選択…</button>
+          <button type="button" data-preview-sound-audition="ka">試聴</button>
+          <button type="button" data-preview-sound-remove="ka" disabled>解除</button>
+        </div>
+        <div class="preview-sound-row" data-preview-sound-row="balloonSuccess">
+          <strong>風船成功</strong><span class="preview-sound-name">未指定（内蔵音／合成音）</span>
+          <button type="button" data-preview-sound-choose="balloonSuccess">選択…</button>
+          <button type="button" data-preview-sound-audition="balloonSuccess">試聴</button>
+          <button type="button" data-preview-sound-remove="balloonSuccess" disabled>解除</button>
+        </div>
+      </div>
+      <p id="preview-sound-settings-status" class="preview-sound-settings-status" aria-live="polite"></p>
+      <p id="preview-sound-settings-error" class="error"></p>
+      <div class="dialog-actions"><button type="submit">閉じる</button></div>
+    </form>
+  </dialog>
+  <dialog id="lower-difficulty-dialog" class="lower-difficulty-dialog">
+    <form id="lower-difficulty-form">
+      <h2>おに・裏から下位譜面を生成</h2>
+      <p>元譜面の拍・アクセント・休符を手掛かりに打音を選び、密度と細かい連符を減らします。音源・元譜面は変更しません。</p>
+      <label>生成元 <select id="lower-source"></select></label>
+      <label id="lower-route-field" hidden>元の分岐ルート <select id="lower-route"><option value="normal">普通譜面</option><option value="expert">玄人譜面</option><option value="master">達人譜面</option></select>（生成先は分岐なし）</label>
+      <fieldset><legend>生成する難易度</legend>
+        <div class="lower-target-row"><label><input name="lower-target" type="checkbox" value="Easy">かんたん</label><label>星の数 <select id="lower-level-Easy" aria-label="かんたんの星の数"></select></label><small id="lower-state-Easy"></small></div>
+        <div class="lower-target-row"><label><input name="lower-target" type="checkbox" value="Normal">ふつう</label><label>星の数 <select id="lower-level-Normal" aria-label="ふつうの星の数"></select></label><small id="lower-state-Normal"></small></div>
+        <div class="lower-target-row"><label><input name="lower-target" type="checkbox" value="Hard">むずかしい</label><label>星の数 <select id="lower-level-Hard" aria-label="むずかしいの星の数"></select></label><small id="lower-state-Hard"></small></div>
+      </fieldset>
+      <label><input id="lower-replace" type="checkbox">既存の譜面を置き換える（選択した難易度だけ）</label>
+      <div id="lower-report" aria-live="polite"></div>
+      <p class="help-muted">星の数に応じて密度と細かい連打を調整し、指定したLEVELで作成します。BPM・OFFSET・GOGO・拍子などの進行は引き継ぎます。難しさは目安のため、生成後に試奏して調整してください。まとめてCtrl＋Zで戻せます。</p>
+      <p id="lower-error" class="error" role="alert"></p>
+      <div class="dialog-actions"><button id="lower-close" type="button">閉じる</button><button id="lower-generate" type="submit" disabled>生成して反映</button></div>
+    </form>
+  </dialog>
+  <dialog id="score-settings-dialog">
+    <form id="score-settings-form">
+      <h2>自動配点</h2>
+      <p>TJA書き出し・撮影時に、全良で100万点に近づくよう基本点を自動調整します。</p>
+      <label>SCOREMODE
+        <select id="score-mode" disabled>
+          <option value="0">0（旧配点・固定）</option>
+          <option value="1">1（10コンボ刻み）</option>
+          <option value="2">2（旧AC配点）</option>
+        </select>
+      </label>
+      <label>SCOREDIFF <input id="score-diff" type="number" value="0" readonly></label>
+      <p>SCOREINIT（自動）: <output id="score-init-preview">0</output></p>
+      <p>全良予測: <output id="score-total-preview">0</output> / 1,000,000</p>
+      <p>大音符・GOGO・連打・風船を含み、連打は撮影と同じ毎秒16打で計算します。実際の演奏では連打数により変わります。音符が少ない曲はTJAの配点上限により100万点に届かない場合があります。</p>
+      <p id="score-settings-error" class="error"></p>
+      <div class="dialog-actions"><button id="cancel-score-settings" type="button">閉じる</button></div>
+    </form>
+  </dialog>
+  <dialog id="branch-editor-dialog">
+    <form method="dialog" class="branch-editor-form">
+      <h2>譜面分岐（OpenTaiko）</h2>
+      <p>イベント欄をクリックで1小節、ドラッグで範囲を指定します。配置済みの分岐を選ぶと条件を編集できます。</p>
+      <strong id="branch-settings-target">新規分岐の条件</strong>
+      <div class="branch-create-grid">
+        <label>条件 <select id="branch-condition-type"><option value="p">p: 連打率</option><option value="pp">pp: 良率</option><option value="jb">jb: 不可</option><option value="r">r: 連打</option><option value="rb">rb: 風船</option><option value="s">s: スコア</option><option value="d">d</option><option value="jp">jp: 良</option><option value="jg">jg: 可</option></select></label>
+        <label>Expert閾値 <input id="branch-expert-value" type="number" step="any" value="70"></label>
+        <label>判定 <select id="branch-range"><option value="m">以上</option><option value="l">未満</option></select></label>
+        <label>Master閾値 <input id="branch-master-value" type="number" step="any" value="90"></label>
+        <label><input id="branch-section-reset" type="checkbox" checked> #SECTIONを付ける</label>
+        <button id="add-branch-section" type="button" aria-pressed="false">タイムラインに分岐を設置</button>
+      </div>
+      <p id="branch-editor-error" class="error"></p>
+      <div id="branch-section-list" class="branch-section-list"></div>
+      <div class="dialog-actions"><button value="close">閉じる</button></div>
+    </form>
+  </dialog>
+  <dialog id="dan-editor-dialog">
+    <form method="dialog" class="dan-editor-form">
+      <h2>段位道場</h2>
+      <div class="dan-toolbar">
+        <button id="dan-new" type="button">新規</button><button id="dan-open" type="button">開く…</button>
+        <button id="dan-save" type="button">保存…</button><button id="dan-export" type="button">TJA書き出し…</button>
+        <button id="dan-add-current" type="button">現在の譜面を空き枠へ追加</button>
+      </div>
+      <section class="dan-import-section" aria-labelledby="dan-import-heading">
+        <h3 id="dan-import-heading">3曲の譜面・音源</h3>
+        <p>保存済みのTJAプロジェクト（.tjaproj）から、譜面と参照音源を各枠へ読み込みます。</p>
+        <div id="dan-import-slots" class="dan-import-slots"></div>
+      </section>
+      <section class="dan-preset-section" aria-labelledby="dan-preset-heading">
+        <h3 id="dan-preset-heading">段位条件プリセット</h3>
+        <div class="dan-preset-controls">
+          <label>プリセット <select id="dan-preset"></select></label>
+          <button id="dan-apply-preset" type="button">条件を適用</button>
+        </div>
+        <small id="dan-preset-note">「以上」の良条件はノーツ数との段位別割合、連打条件は黄色連打の秒数と風船打数から算出します。「以下」条件は基準値を維持します。譜面変更後は再適用してください。適用後も数値を変更できます。</small>
+      </section>
+      <label>段位名 <input id="dan-title" type="text" value="新しい段位"></label>
+      <label>LEVEL <input id="dan-level" type="number" min="1" step="1" value="10"></label>
+      <h3>段位条件 / ゲージ（EXAM1–7）</h3>
+      <div id="dan-exam-list" class="dan-exam-list"></div>
+      <h3>曲順</h3>
+      <div id="dan-song-list" class="dan-song-list"></div>
+      <p id="dan-editor-status"></p>
+      <div class="dialog-actions"><button value="close">閉じる</button></div>
+    </form>
+  </dialog>
+  <dialog id="tja-import-dialog">
+    <form method="dialog">
+      <h2>TJAを開く</h2>
+      <p id="tja-import-description">既存TJAと使用する音源を選択します。保持できない命令がある場合は、破棄する前に確認します。</p>
+      <button id="tja-import-choose-pair" type="button">TJA＋音源をまとめて選択…</button>
+      <p class="help-muted">ファイル選択画面でTJAを1件と音源を1件、まとめて選んでください。あとから片方だけ選び直すこともできます。</p>
+      <div class="tja-import-picker"><button id="tja-import-choose-chart" type="button">TJAを選択…</button>
+      <output id="tja-import-name">未選択</output>
+      <button id="tja-import-choose-audio" type="button">音源を選択…</button>
+      <output id="tja-import-audio-name">未選択</output></div>
+      <fieldset id="tja-import-placement-tools" hidden>
+        <legend>特殊な間隔の配置</legend>
+        <label>読み込み方法 <select id="tja-import-placement"><option value="round">グリッドに丸める（従来の方式）</option><option value="preserve">丸めずに保持する（内部小節線）</option></select></label>
+        <p class="help-muted">TJAを選択した後、読み込む前に選べます。「丸めずに保持する」は元の配置時刻を保ち、必要な箇所に内部小節線を置きます。内部小節線は演奏画面に表示しません。</p>
+      </fieldset>
+      <p id="tja-import-error" class="error"></p>
+      <div class="dialog-actions"><button id="tja-import-apply" type="button" disabled>譜面に読み込む</button><button value="close">閉じる</button></div>
+    </form>
+  </dialog>
+  <dialog id="help-dialog" class="help-dialog" aria-labelledby="help-title">
+    <div class="help-shell">
+      <header class="help-header">
+        <div>
+        <span class="help-eyebrow">Tja-Editor3 HELP</span>
+          <h2 id="help-title">操作ガイド</h2>
+          <p>OpenTaiko v0.6.0.108向け譜面を、安全に作成・確認・書き出すためのガイドです。</p>
+        </div>
+        <button id="close-help" type="button" aria-label="ヘルプを閉じる">閉じる</button>
+      </header>
+      <div class="help-layout">
+        <nav id="help-navigation" class="help-navigation" aria-label="ヘルプの項目">
+          <button type="button" data-help-topic="start" aria-current="page">はじめに</button>
+          <button type="button" data-help-topic="editing">タイムライン編集</button>
+          <button type="button" data-help-topic="events">EVENT・分岐</button>
+          <button type="button" data-help-topic="dan">段位道場</button>
+          <button type="button" data-help-topic="audio">音源編集</button>
+          <button type="button" data-help-topic="keys">キー操作</button>
+          <button type="button" data-help-topic="files">保存・書き出し</button>
+          <button type="button" data-help-topic="about">このアプリについて</button>
+        </nav>
+        <div id="help-content" class="help-content" tabindex="0">
+          <section data-help-panel="start">
+            <h3>最初の1曲を作る</h3>
+            <ol class="help-steps">
+              <li><strong>新規プロジェクト</strong><span>音源を選び、曲名・BPM・OFFSET・LEVELを入力します。既存譜面は「TJAを開く…」の「TJA＋音源をまとめて選択…」で2ファイルを同時に選べます。</span></li>
+              <li><strong>プロジェクト情報</strong><span>「曲情報」からTITLE、SUBTITLE、GENRE、基本BPM、OFFSETを調整し、「変更を適用」で確定します。デスクトップでは左下の「曲情報・基本設定」からも開けます。</span></li>
+              <li><strong>譜面を編集</strong><span>左のノーツまたはEVENTを選び、対応するタイムラインをクリック／ドラッグします。小節線は専用レーンで編集します。</span></li>
+              <li><strong>音と動きを確認</strong><span>再生、プレビュー、比較プレビュー、メトロノームを使ってタイミングを確認します。</span></li>
+              <li><strong>保存して書き出す</strong><span>.tjaprojを保存してから「書き出し…」で.tjaと.oggを同じフォルダーへ出力します。</span></li>
+            </ol>
+            <aside class="help-callout"><strong>大切なこと</strong><p>.tjaprojが編集用の正本です。.tjaは書き出し成果物なので、作業中はこまめにプロジェクトを保存してください。</p></aside>
+            <article class="desktop-help-only"><h4>PC音声から作成する</h4><p>新規作成の音源選択の下にある「PCの音を録音」で、Windowsの既定の出力から流れる音を録音できます。もう一度押すと停止し、前後の完全な無音をカットしたWAVが音源に設定されます。静かな余韻と曲中の無音は残します。最大30分で、マイクは含みません。キャンセルやEscで未確定の録音を破棄できます。ウィンドウ単位の音声分離には対応していません。</p></article>
+          </section>
+          <section data-help-panel="editing" hidden>
+            <h3>タイムライン編集</h3>
+            <div class="help-card-grid">
+              <article><h4>配置</h4><p>ノーツツールを選択してノーツ編集レーンをクリックします。連打・風船はドラッグで長さを決めます。</p></article>
+              <article><h4>選択と移動</h4><p>ノーツをクリックして選択し、ドラッグで移動します。Ctrl/Cmd+クリックで複数選択、Shift+空ドラッグで範囲選択できます。</p></article>
+              <article><h4>連打・風船・GOGOの長さ</h4><p>左右端をドラッグして伸縮します。表示の左右端で押さえ続けると自動スクロールし、中央へ戻すか離すと止まります。1回の「元に戻す」で長さを戻せます。Escや操作の中断では変更を取り消します。GOGOのドラッグ作成にも対応します。</p></article>
+              <article><h4>範囲選択</h4><p>消しゴムの隣の「範囲選択」を選び、タイムラインをドラッグします。範囲は指を離しても保持され、左右端で長さを調整できます。ドラッグ中に表示の左右端へ近づけると自動スクロールし、その場で押さえ続けても範囲を広げられます。中央へ戻すか指を離すと止まります。Shift+空ドラッグも対応します。中央上の「移動」をドラッグすると範囲内のノーツをまとめて移動し、1回のCtrl+Zで戻せます。範囲にかかる連打・風船も全体を移動します。範囲指定・長さ変更だけではノーツを動かしません。Escで範囲を解除します。</p></article>
+              <article><h4>削除</h4><p>選択後にDelete／Backspace、同じ対象をダブルタップ、または消しゴムツールで削除できます。</p></article>
+              <article><h4>表示と移動</h4><p>ホイールで横移動、Ctrl/Cmd+ホイールでズームします。Spaceを押しながらドラッグしても移動できます。</p></article>
+              <article><h4>空白送り</h4><p>停止中に「空白」ボタンか初期キーOを押すと、ノーツを置かずに次のグリッドへ進みます。キーコンフィグで変更できます。ノーツや履歴は増えません。</p></article>
+              
+              
+              <article><h4>グリッド</h4><p>分割数は配置・移動のスナップ単位です。横の↑／↓ボタン、または入力欄以外でキーボードの↑／↓を押すと、↑で細かく、↓で広くします。設定済みのキー割り当てを優先します。特殊グリッド中は分割数を1ずつ変更し、適用範囲は維持します。「特殊グリッド」には14分・20分と任意の整数分割があります。適用時の現在位置を含む小節から4小節先の小節線まで有効です。「現在位置から適用」で場所を選び直せます。特殊グリッド中に「特殊グリッド」をもう一度押すと解除します。通常の分割を選び直しても解除できます。配置済みノーツは保存・書き出しでも維持します。Alt操作は48分相当の2tickスナップを使います。表示を消してもスナップは維持されます。</p></article>
+              <article><h4>Undo／Redo</h4><p>1回の配置、ドラッグ、設定変更を1操作として戻せます。難易度をまたぐ履歴は対象難易度へ自動で戻ります。</p></article>
+            </div>
+            <h4>4つの編集レーン</h4>
+            <p>「下位譜面を生成…」では、おに・裏からかんたん／ふつう／むずかしいを推定して作成します。生成前に打音数・推定LEVELを確認できます。既存の難易度は通常は保護され、明示した場合だけ置き換えます。Ctrl＋Zで生成全体を戻せます。</p>
+            <dl class="help-definition-list"><dt>波形</dt><dd>音源位置の確認、Seek、表示範囲の移動。</dd><dt>ノーツ編集</dt><dd>ドン、カッ、連打、風船の配置と選択。</dd><dt>イベント</dt><dd>BPM、SCROLL、拍子、GOGOなどの配置。</dd><dt>小節線</dt><dd>小節線の追加・非表示・復元。</dd></dl>
+          </section>
+          <section data-help-panel="events" hidden>
+            <h3>EVENTと譜面分岐</h3>
+            <div class="help-table-wrap"><table class="help-table"><thead><tr><th>EVENT</th><th>用途</th></tr></thead><tbody>
+              <tr><td>BPM</td><td>途中のテンポを変更します。</td></tr><tr><td>SCROLL</td><td>流れる速度と複素スクロールを設定します。NMSCROLL／BMSCROLL／HBSCROLLは左下の詳細から選択します。</td></tr>
+              <tr><td>MEASURE</td><td>拍子を変更します。</td></tr><tr><td>DELAY</td><td>譜面の時刻を遅延させます。</td></tr><tr><td>GOGO</td><td>範囲をクリック／ドラッグで配置し、両端を伸縮できます。</td></tr>
+              <tr><td>SUDDEN</td><td>表示開始と移動開始の時間を設定します。</td></tr><tr><td>DIRECTION</td><td>ノーツの進行方向を8方向から選びます。</td></tr>
+              <tr><td>SENOTE</td><td>次のノーツへ固定SE表示番号を割り当てます。</td></tr><tr><td>LYRIC</td><td>歌詞の表示区間を配置します。文字を入力して適用・キャンセルを選び、左右端で伸縮できます。初期長は1小節、次の歌詞までの空きが短い場合は調整します。</td></tr><tr><td>DEMOSTART</td><td>選曲画面の試聴開始位置です。プロジェクト全体で1個だけ配置できます。</td></tr>
+            </tbody></table></div>
+            <h4>譜面分岐</h4>
+            <p>左の「譜面分岐」で設定画面を開き、「タイムラインに分岐を設置」を押してイベントレーンへ配置します。両端ドラッグで小節単位に伸縮し、ダブルタップで削除できます。</p>
+            <p>分岐区間ではNormal／Expert／Masterの3段が同時に表示され、編集したい段を直接操作できます。条件、閾値、以上／未満、#SECTIONは右上の設定画面で変更します。</p>
+          </section>
+          <section data-help-panel="dan" hidden>
+            <h3>段位道場</h3>
+            <ol class="help-steps">
+              <li><strong>段位を開く</strong><span>上部の「段位」から専用編集画面を開きます。通常プロジェクトとは別の.tjadanprojとして保存されます。</span></li>
+              <li><strong>3曲を読み込む</strong><span>保存済み.tjaproj、またはTJAと音源の組み合わせを各枠へ読み込みます。曲順は後から変更できます。</span></li>
+              <li><strong>プリセットを適用</strong><span>初段～十段～達人から選びます。「以上」の良・連打条件は読み込んだ譜面内容から算出され、適用後に数値を編集できます。</span></li>
+              <li><strong>条件を確認</strong><span>全体／曲別EXAM1～7、赤合格値、金合格値、以上／未満を確認します。</span></li>
+              <li><strong>TJA書き出し</strong><span>COURSE:Dan、EXAM、NEXTSONGを含むTJAを、設定中の互換先向けに出力します。</span></li>
+            </ol>
+            <aside class="help-callout warning"><strong>プリセット再計算</strong><p>譜面を差し替えた場合、プリセットを再適用するまで手動調整値は自動変更されません。</p></aside>
+          </section>
+          <section data-help-panel="audio" hidden>
+            <h3>音源編集</h3>
+            <p>自動採譜の「譜面コンセプト」では、音取り・リズム・展開・配色を別々に選べます。「12分主体」を選び、詳細の指定を「厳格」にすると、標準では12分の骨格と局所的な24分装飾から選び、16分主体へ切り替えません。必要な12分を既存の許可リズムでも選んでください。「優先」では音に根拠のある別系統も許容します。16分主体＋32分アクセントでは既存側の32分許可も必要で、瞬間密度上限は引き続き守ります。音が不足しても埋めず、生成結果の「コンセプト適合」に実間隔比率・未達理由・配色役割の変更を表示します。詳細の実験設定は初期OFFです。「すべてデフォルトに戻す」はコンセプトもまとめて戻します。</p>
+            <p>上部の「自動採譜」では、拾う音ごとのドン／カッ／自動／除外、メロディーと伴奏の重視度、密度、音取りと楽しさの重視度を指定できます。主旋律には歌声と楽器の両方を含みます。「キックの等間隔リズムを優先する」は、検出したキックの周期を保ち、低密度では均等な間引きを優先します。音のない位置にキックを足す機能ではありません。詳細を閉じていても、使用リズム・打速上限・GOGO・大音符・連打・風船の設定値を見出しで確認できます。</p>
+            <p>「瞬間密度の上限」「連打を使う」「風船を使う」は追加の指定を開かずに操作できます。「大音符の目安」は割合の上限です。大音符は音源の短時間RMSを周囲の発音と比較し、明確に大きい強音で、密集し過ぎない位置を選びます。小節頭という理由だけでは大音符にしません。連打は短い連続打音、風船は盛り上がる連続打音が候補です。再生成時は対象範囲の打音・連打・風船を一から作り直します。選択範囲のみ生成では、範囲外と境界をまたぐ連打・風船を保持します。</p>
+            <p>「生成して反映」で選択中の難易度・分岐へすぐ反映し、Ctrl+Zで採譜前に戻せます。メロディーは前後の音高で配色し、設定した高音はカッ、低音はドンを優先します。主旋律・打楽器や音高の判別は推定です。完全な音源分離ではないため、実曲では試聴しながら調整してください。音のずれが続く場合は、先にBPM・OFFSETを合わせてください。</p>
+            <p>「範囲選択」で選んだ範囲がある場合、その範囲内だけを生成・置換し、範囲外のノーツを保持します。採譜画面に秒数を表示します。曲全体を採譜する場合は、先にEscで範囲を解除してください。</p>
+            <p>配置グリッドの「自動」は、チェックしたリズムだけから推定します。「16分＋24分だけ」「12分＋16分だけ」でまとめて選べます。初期状態では32分・48分を使いません。「似たフレーズのリズムを揃える」が有効な時は、小節をまたぐ最大32拍をまとめて評価し、曖昧な候補による細分の切替を抑えます。明確な三連符は切り替え、空の拍・選択範囲・編集できない区間・既存ロングで評価を区切ります。近くの似た小節で同じ位置・音の種類が繰り返される候補を少し優先し、再打音の根拠が弱い帯域補助検出の連続候補は優先度を下げます。固定12分を含む手動グリッドも選べます。</p>
+            <p>「瞬間密度の上限」はノーツ間の実時間で近接打を制限します。初期値は基本BPMの16分相当で、上限は48分相当です。4・8・12・16・24・32・48分の目盛りを表示します。BPMが高い時や拍・小節の境界でも実時間の間隔を守ります。新しい打音は保持する既存打音との間隔も確認し、既存ノーツ自体は動かしません。間引いた分を平均密度のために埋め戻すことはありません。制限は生成する通常打音に適用し、既存の密集配置を自動修正する機能ではありません。</p>
+            <p>配色の70%補正は生成した通常打音全体に適用し、連打・風船や既存ノーツは数えません。ドンのみの導入などは残せますが、比率を満たすために必要な場合は、音色指定やメロディーの色も補正します。音色指定を最優先にしたい時はチェックを外せます。打音1つでは7:3以下を満たせません。生成後に間引き・配色補正・アレンジの打数を表示します。</p>
+            <p>基本設定で難易度の目安・密度・拾う音を決め、必要な詳細だけ開いて調整できます。「複合と曲の展開」では、反復の変奏量・体力負荷・配置済みGOGOの密度強調を指定します。GOGOでも無音は埋めません。通常は検出した音だけから選び、補助ノーツを有効にした場合だけ活動中の短い打音間を16分でつなぎます。</p>
+            <p>複合の配色を任せたい打音は「自動」を選んでください。最大2小節のまとまりと反復を使って候補を比較します。生成後に再び開くと「前回の生成結果」で密度・運手・反復などの目安と処理時間を確認できます。同じ音源・音源編集なら解析を再利用します。★や評価値は推定であり、試し叩きで確認してください。</p>
+            <p>結果の最大1／2／5／10秒密度は、それぞれの長さの区間にある打音数を秒数で割った値です。瞬間密度の上限（隣接打音の間隔）とは別に確認できます。「候補・配色の判断を記録する」を有効にして生成すると、結果内に採用・棄却や音色指定・音程・配色補正の理由をJSONで表示します。詳細は最大12,000件で、理由別の件数は全件分です。初期状態はOFF、原音声やファイルパスは含めず、保存や送信は行いません。</p>
+            <p>音源編集は右側のタブで切替できます。「テンポ・音程・EQ」では音程を保つ0.5～2倍のテンポ変更、独立した±12半音の音程、3帯域EQ、プリセット、ピーク音量調整を行えます。「曲をつなぐ」では追加音源の範囲・テンポ・クロスフェードを設定し、つなぎを試聴してから新しいWAV音源として適用します。元のファイルは保持し、接続もCtrl+Zで戻せます。音源の長さを変えてもノーツの時刻は自動移動しません。</p>
+            <p>音源編集の「全体を選択」は現在のトリム開始～終了を選びます。「選択解除」は範囲だけを解除し、「選択範囲を拡大」は選択した箇所へ表示を合わせます。これらは音源や編集履歴を変更しません。1ms/10msの境界調整は「境界を微調整」を開きます。「変更を適用して戻る」で編集を確定します。</p>
+            <p>「原音と比較」で編集前を試聴でき、「選択範囲をループ」で同じ箇所を繰り返して調整できます。通常の音源編集は「変更を適用」で確定します。</p>
+            <p>上部の「BPM」から自動BPM・OFFSET推定と前後の完全無音カットを開けます。候補一覧と½倍／2倍でテンポを選び、「BPMを適用」でBPMだけを反映できます。OFFSETやノーツの時刻は保持します。「従来の測定サイト」も利用できます。無音カットは譜面との対応を維持し、Ctrl+Zで戻せます。</p>
+            <p>OFFSETの下にある「小節の頭：1拍前へ／1拍後ろへ」は、先頭のBPMの四分音符1拍分、小節線をずらします。ノーツの時刻は変えず、Ctrl+Zで元に戻せます。</p>
+            <p>プレビュー下の速度で0.5～1倍に調整できます（スロー時は音程も変化）。「DEMOSTART / 試聴」では秒数、または何回目のゴーゴーかと前後1小節を指定して試聴できます。「試し叩き…」はWindows版で別ウィンドウを開きます。Spaceで開始し、設定済みのドン／カッキーや左のパッドで叩けます。達成率、良・可・不可、連打数、×表示、オート、速度、判定調整をまとめています。正の判定調整は入力を早めます。← →キーや帯のドラッグで開始小節を選択し、Escで閉じます。</p>
+            <p>ノーツ数は連打・風船を除いた打音の数です。平均密度は「（打音数−1）÷最初の打音から最後の打音までの秒数」で、打音が0個・1個の場合は0です。上部の「書き出し…」の右隣にある「譜面画像…」で、表示中の難易度・分岐ルートをTJA Tools形式のPNGに出力できます。</p>
+            <p>譜面画像にはTJA Tools（Snack、MIT License）の描画処理とPixel 3x5フォントを使用しています。通常はサイトと同じ16拍単位の折り返しで1枚の画像を保存します。</p>
+            <p>WAV、MP3、Ogg Vorbis、音声入りMP4／MKVを読み込めます。MP4／MKVは映像を保存せず、抽出した音声だけを管理します。</p>
+            <div class="help-card-grid"><article><h4>Overview</h4><p>曲全体を表示します。クリックでSeek、表示枠のドラッグでDetail範囲を移動します。</p></article><article><h4>Detail</h4><p>拡大した波形です。範囲選択、Cut、Fade、Crossfadeをミリ秒単位で調整します。</p></article><article><h4>非破壊編集</h4><p>元音源は書き換えません。「変更を適用」すると設定だけをプロジェクトへ保存し、プレビューと書き出しで同じ処理を使用します。</p></article><article><h4>試聴</h4><p>再生／一時停止、停止、選択範囲再生を使えます。音源編集画面のUndo／Redoは適用前の編集専用です。</p></article></div>
+            <h4>プレビュー効果音</h4>
+            <p>「設定 → プレビュー効果音」からドン、カッ、風船成功音を個別に指定・試聴・解除できます。選んだ音声はアプリ専用領域に保存され、プロジェクトやTJA／OGG書き出しには含まれません。</p>
+          </section>
+          <section data-help-panel="keys" hidden>
+            <h3 class="desktop-help-only">現在のキー設定</h3>
+            <p class="desktop-help-only">ここには現在保存されている割当が表示されます。変更は「設定 → キーコンフィグ」「設定 → ショートカット設定」から行えます。</p>
+            <h4 class="desktop-help-only">リアルタイム入力</h4><div id="help-realtime-keys" class="help-key-list desktop-help-only"></div>
+            <p class="desktop-help-only">停止中にドン／カッのキーを押すと、再生バーに最も近い現在のグリッドへ小ドン／小カッを1個配置し、次のグリッドへ進みます。リアルタイム入力がOFFでも使えます。1打ずつUndoできます。停止中は重複位置や連打・風船の区間では配置も移動もしません。</p>
+            <p class="desktop-help-only">再生中はリアルタイム入力をONにすると音に合わせて記録できます。同じグリッドにノーツがある場合は、入力精度に合わせて次の空きグリッドへ順に配置します。元のノーツは残り、録音はまとめてUndoできます。連打・風船の区間や分岐境界を越える配置は行いません。</p>
+            <h4 class="desktop-help-only">編集ショートカット</h4><div id="help-shortcut-list" class="help-key-list desktop-help-only"></div>
+            <aside class="help-callout desktop-help-only"><strong>固定ジェスチャー</strong><p>Ctrl/Cmd+ホイール: 横ズーム／Alt+ノーツクリック: スポイト／Alt+ドラッグ: 2tickスナップ／Shift+空ドラッグ: 範囲選択／Ctrl/Cmd+ノーツクリック: 複数選択</p></aside>
+            <div class="android-help-only">
+              <h3>Androidのタッチ操作</h3>
+              <p>Android版は横画面専用です。左側のツールを1タップで切り替え、画面上部から再生・停止、グリッド分割、戻す、進む、選択編集を操作できます。グリッド線は常に表示されます。再生位置の数値と位置バーは左下、新規作成、保存、書き出し、OFFSET、音量、倍率、メトロノームは右側にまとまっています。</p>
+              <div class="help-card-grid"><article><h4>ツール</h4><p>左側の編集パレットからツールを1タップで選びます。左パレットは常時表示され、右側の「メニューを隠す／表示」で右メニューを最小化できます。</p></article><article><h4>選択</h4><p>ノーツやEVENTをタップして選択し、ドラッグで移動します。長音とGOGO、分岐は両端をドラッグして伸縮できます。</p></article><article><h4>コピー／貼り付け</h4><p>ノーツを選択して上部の「コピー」または「切取」を押し、左下の位置バーを合わせて「貼付」を押します。</p></article><article><h4>削除</h4><p>選択して上部の「削除」を押すか、同じ対象をダブルタップします。</p></article></div>
+            </div>
+          </section>
+          <section data-help-panel="files" hidden>
+            <h3>保存・Recovery・書き出し</h3>
+            <dl class="help-definition-list"><dt>.tjaproj</dt><dd>譜面、EVENT、難易度、分岐、音源編集設定を保持する編集用ファイルです。</dd><dt>.tjadanproj</dt><dd>段位の曲構成とEXAM条件を保持する専用ファイルです。</dd><dt>.tja + .ogg</dt><dd>演奏用の書き出し成果物です。常に同じフォルダーへ出力します。</dd><dt>Autosave</dt><dd>編集中の回復用データを定期保存します。通常保存の代わりにはならないため、作業の節目で保存してください。</dd></dl>
+            <h4>TJAを開くとき</h4><p>TJAを選択した後、「特殊な間隔の配置」で「グリッドに丸める」か「丸めずに保持する（内部小節線）」を選べます。丸めない方式では元の配置時刻を保存・再読込・書き出しでも保持し、内部小節線は演奏画面に表示しません。エディターで保持できない命令が見つかると、対象機能を列挙して確認します。続行した場合、その部分だけを省略して開きます。元のTJAは変更しません。</p>
+            <h4>ZIPで書き出す（Windows）</h4><p>「書き出し…」を押して「ZIP（TJA＋OGGのみ）」を選び、ZIPの保存先を選択します。ZIP直下にTJAとOGGの2ファイルだけを格納し、音源編集の設定も反映します。フォルダーへ出力する場合も「書き出し…」から「フォルダー（TJA＋OGG）」を選べます。</p>
+            <aside class="help-callout android-help-only"><strong>Androidの保存先</strong><p>プロジェクトは Documents/TJA Editor/Projects、書き出しは Documents/TJA Editor/Exports に保存します。外部から開いた.tjaprojの隣接音源はAndroidの権限制約で自動取得できないため、求められた場合は音源を選び直してください。</p></aside>
+          </section>
+          <section data-help-panel="about" hidden>
+            <div class="help-about-mark" aria-hidden="true"><span>DON</span><span>KA</span></div>
+            <h3>Tja-Editor3 1.0.0</h3>
+            <p>波形を見ながらTJA譜面を作成し、プレビュー、音源調整、複数難易度、譜面分岐、段位道場までを1つの作業環境で扱うエディターです。</p>
+            <dl class="help-definition-list"><dt>プロジェクト形式</dt><dd>.tjaproj / .tjadanproj</dd><dt>書き出し</dt><dd>UTF-8 BOM + CRLFの.tja、Ogg Vorbis音源</dd></dl>
+            <p class="help-muted">Tja-Editor3はOpenTaiko本体、ゲームのskin、曲、効果音を同梱しません。</p>
+          </section>
+        </div>
+      </div>
+      <footer class="help-footer"><span>F1でいつでもこのガイドを開けます。</span></footer>
+    </div>
+  </dialog>
+  <script type="module" src="app.js"></script>
+<section id="web-about" class="web-surface web-about" aria-labelledby="web-about-title">
+  <p class="web-about-eyebrow">しんてぃ開発 · 無料のTJA譜面エディター</p>
+  <h1 id="web-about-title">Tja-Editor3</h1>
+  <p class="web-about-lead">音源を読み込んで、譜面を描き、演奏動画まで。</p>
+  <p>Tja-Editor3は、TJA形式の譜面を作成・編集するアプリです。旧称「TJA Editor」から、同名の別ソフトと区別できる名前へ変更しました。Web版はインストール不要で、音源や動画の処理は端末内で行います。</p>
+  <div class="web-about-features">
+    <article><h2>音源から自動採譜</h2><p>音源を解析して譜面の候補を生成。密度やリズムを調整し、結果を確認して編集できます。下位難易度の譜面生成にも対応します。</p></article>
+    <article><h2>波形を見ながらTJA編集</h2><p>ドン・カッ・連打・風船、BPM・拍子・歌詞などを編集。複数難易度、譜面分岐、多重スクロール、特殊グリッドを扱えます。</p></article>
+    <article><h2>音源編集とMP4撮影</h2><p>トリム・カット・フェード・音量を調整し、TJAとOGGを書き出せます。オート演奏のMP4やサムネイルも作成できます。</p></article>
+  </div>
+  <nav class="web-about-links" aria-label="Tja-Editor3の案内"><a href="./">Web版で譜面を作る</a><a href="about.html">Tja-Editor3について</a><a href="desktop.html">Windows版の紹介・ダウンロード</a><a href="https://github.com/sinty0506/Tja-editor-releases">公式配布ページ・更新情報</a></nav>
+  <p class="web-about-note">Web版はChrome・Edgeでの利用を推奨します。作業を閉じる前に編集ZIPを保存してください。YouTube URLからの直接読み込みはWindows版の機能です。OpenTaiko本体・ゲームのスキン・曲素材は同梱しません。</p>
+</section>
+
+<dialog id="web-updates-dialog" aria-labelledby="web-updates-title"><header><div><p class="updates-eyebrow">Tja-Editor3 · お知らせ</p><h2 id="web-updates-title">新機能と更新履歴</h2></div><button type="button" id="web-updates-close" aria-label="お知らせを閉じる">閉じる</button></header><div class="updates-tabs" role="tablist" aria-label="お知らせの表示"><button type="button" id="updates-tab-new" role="tab" aria-selected="true" aria-controls="updates-new">新機能</button><button type="button" id="updates-tab-history" role="tab" aria-selected="false" aria-controls="updates-history" tabindex="-1">更新履歴</button></div><div class="updates-scroll"><section id="updates-new" role="tabpanel" aria-labelledby="updates-tab-new"><p class="updates-intro">最近追加した機能をご紹介します。配置キーはキー設定に合わせて変わります。</p><article class="update-entry" data-update="web-fixes-20261119"><div class="update-meta"><time datetime="2026-11-19">2026.11.19</time><span>Web版</span><span>Windows版</span></div><h3>既存の編集・撮影機能を修正</h3><ul><li>平均密度を「（打音数−1）÷最初から最後の打音までの秒数」に統一しました。0打・1打は0です。</li><li>多重レーンを結合した際、小節線が増えすぎる問題を修正しました。ラベルの選択・ダブルタップでの削除も改善しました。</li><li>撮影のノーツ表記、背景・ジャケットの更新、動画枠や重なり順の反映を改善しました。</li></ul></article>
+<article class="update-entry" data-update="key-guidance"><div class="update-meta"><time datetime="2026-11-12">2026.11.12</time><span>Web版</span><span>Windows版</span></div><h3>配置キーの案内と切替ショートカット</h3><ul><li>ノーツ・イベントの説明欄に、現在のキー設定に合わせた配置キーを表示。未選択時は基本操作を案内します。</li><li>リアルタイム入力 Ctrl+Alt+R、試し叩き Ctrl+Alt+P、ループ Ctrl+Alt+L。メトロノームは Ctrl+M。すべてキー設定で変更できます。</li><li>試し叩きの別ウィンドウも、同じ切替キーで閉じられます。</li></ul></article>
+<article class="update-entry" data-update="loop-playback"><div class="update-meta"><time datetime="2026-11-11">2026.11.11</time><span>Web版</span><span>Windows版</span></div><h3>ループ再生と独立した編集バー</h3><ul><li>停止ボタン横のループをONにすると、画面・GOGO・1小節・4小節の範囲を繰り返し再生できます。</li><li>ループに触れると表示される説明欄で、範囲と待機を設定します。待機は0または1/4小節刻みで、待機中はメトロノームが鳴ります。</li><li>画面ループでは自動スクロールを停止。GOGO・1小節・4小節では自動スクロールを使えます。GOGOの手前から再生した場合は、到達したGOGO区間をループします。</li><li>再生バーとは別の編集バーを ←／→ でグリッド移動し、その位置へノーツを配置できます。</li></ul></article>
+<article class="update-entry" data-update="live-editing"><div class="update-meta"><time datetime="2026-11-11">2026.11.11</time><span>Web版</span><span>Windows版</span></div><h3>再生を続けながら譜面を編集</h3><ul><li>再生中もノーツ・イベントを編集できます。元に戻す・やり直すにも対応します。</li></ul></article>
+<article class="update-entry" data-update="bomb-notes"><div class="update-meta"><time datetime="2026-11-11">2026.11.11</time><span>Web版</span><span>Windows版</span></div><h3>爆弾音符（C）を追加</h3><ul><li>ツールバーから爆弾音符を選び、通常の単音と同じように配置・移動・コピーできます。プレビュー・撮影にも表示します。</li><li>空白はツールバーから外しましたが、既存の空白入力キーとキー設定は引き続き使えます。</li></ul></article></section><section id="updates-history" role="tabpanel" aria-labelledby="updates-tab-history" hidden><p class="updates-intro">新しい順に掲載しています。各項目に対象の版を記載しています。</p><article class="update-entry" data-update="web-fixes-20261119"><div class="update-meta"><time datetime="2026-11-19">2026.11.19</time><span>Web版</span><span>Windows版</span></div><h3>既存の編集・撮影機能を修正</h3><ul><li>平均密度を「（打音数−1）÷最初から最後の打音までの秒数」に統一しました。0打・1打は0です。</li><li>多重レーンを結合した際、小節線が増えすぎる問題を修正しました。ラベルの選択・ダブルタップでの削除も改善しました。</li><li>撮影のノーツ表記、背景・ジャケットの更新、動画枠や重なり順の反映を改善しました。</li></ul></article>
+<article class="update-entry" data-update="github-pages-20261119"><div class="update-meta"><time datetime="2026-11-19">2026.11.19</time><span>Web版</span></div><h3>Web版をGitHub Pagesへ移転</h3><ul><li>ChatGPTへのログインなしで、独立したURLから利用できます。音源・動画の処理と保存は引き続き端末内で行います。</li><li>等速化やプリセットなどの追加編集ツールは、Windows版の紹介ページで確認できます。</li></ul></article>
+<article class="update-entry" data-update="recording-gogo-fit"><div class="update-meta"><time datetime="2026-11-13">2026.11.13</time><span>Web版</span><span>Windows版</span></div><h3>撮影のGOGO演出をレーンに収まる大きさへ</h3><ul><li>判定位置の炎を縮め、レーン内に収めました。1譜面・2譜面・全難易度表示に対応しています。</li><li>GOGO開始時の火花の再生時間は維持しています。</li></ul></article>
+<article class="update-entry" data-update="recording-caption-video"><div class="update-meta"><time datetime="2026-11-13">2026.11.13</time><span>Web版</span><span>Windows版</span></div><h3>撮影の爆弾表記・動画枠・重なり順を改善</h3><ul><li>爆弾音符の下は標準で「ドン」と表示し、SENOTEで変更した読みを反映します。</li><li>下部動画の枠が動画の縦横比に合うようになりました。</li><li>「下部の重なり順」で、波形と動画のどちらを手前にするか選択・保存できます。</li></ul></article>
+<article class="update-entry" data-update="bomb-note-order"><div class="update-meta"><time datetime="2026-11-13">2026.11.13</time><span>Web版</span><span>Windows版</span></div><h3>ノーツ種類一覧の爆弾を一番下へ</h3><ul><li>ノーツを選択した際の「種類」一覧で、爆弾（C）を風船の後ろ、一番下に移動しました。</li></ul></article>
+<article class="update-entry" data-update="announcements"><div class="update-meta"><time datetime="2026-11-12">2026.11.12</time><span>Web版</span></div><h3>新機能と更新履歴を確認できるように</h3><ul><li>画面上部の「新機能」から最近の追加機能と過去の更新履歴を確認できます。</li><li>デスクトップ版の紹介動画の下に、動画制作後の変更を日付付きで掲載しました。</li></ul></article>
+<article class="update-entry" data-update="key-guidance"><div class="update-meta"><time datetime="2026-11-12">2026.11.12</time><span>Web版</span><span>Windows版</span></div><h3>配置キーの案内と切替ショートカット</h3><ul><li>ノーツ・イベントの説明欄に、現在のキー設定に合わせた配置キーを表示。未選択時は基本操作を案内します。</li><li>リアルタイム入力 Ctrl+Alt+R、試し叩き Ctrl+Alt+P、ループ Ctrl+Alt+L。メトロノームは Ctrl+M。すべてキー設定で変更できます。</li><li>試し叩きの別ウィンドウも、同じ切替キーで閉じられます。</li></ul></article>
+<article class="update-entry" data-update="filming-notes"><div class="update-meta"><time datetime="2026-11-12">2026.11.12</time><span>Web版</span><span>Windows版</span></div><h3>撮影時の音符表示とフォントを調整</h3><ul><li>撮影時の爆弾音符が、判定位置で消えず左へ流れていくようになりました。</li><li>16分音符が隣接するよう、撮影の音符間隔を調整しました。</li><li>初期フォントを大江戸に変更。端末にない場合は代替書体を使用し、好みのフォント・サイズも引き続き指定できます。</li></ul></article>
+<article class="update-entry" data-update="loop-grid-fix"><div class="update-meta"><time datetime="2026-11-11">2026.11.11</time><span>Web版</span><span>Windows版</span></div><h3>ループ中の上下キーでグリッドを変更</h3><ul><li>ループ中も ↑／↓ でグリッドを変更できるよう修正しました。←／→ は編集バーを移動します。</li></ul></article>
+<article class="update-entry" data-update="loop-playback"><div class="update-meta"><time datetime="2026-11-11">2026.11.11</time><span>Web版</span><span>Windows版</span></div><h3>ループ再生と独立した編集バー</h3><ul><li>停止ボタン横のループをONにすると、画面・GOGO・1小節・4小節の範囲を繰り返し再生できます。</li><li>ループに触れると表示される説明欄で、範囲と待機を設定します。待機は0または1/4小節刻みで、待機中はメトロノームが鳴ります。</li><li>画面ループでは自動スクロールを停止。GOGO・1小節・4小節では自動スクロールを使えます。GOGOの手前から再生した場合は、到達したGOGO区間をループします。</li><li>再生バーとは別の編集バーを ←／→ でグリッド移動し、その位置へノーツを配置できます。</li></ul></article>
+<article class="update-entry" data-update="live-editing"><div class="update-meta"><time datetime="2026-11-11">2026.11.11</time><span>Web版</span><span>Windows版</span></div><h3>再生を続けながら譜面を編集</h3><ul><li>再生中もノーツ・イベントを編集できます。元に戻す・やり直すにも対応します。</li></ul></article>
+<article class="update-entry" data-update="bomb-notes"><div class="update-meta"><time datetime="2026-11-11">2026.11.11</time><span>Web版</span><span>Windows版</span></div><h3>爆弾音符（C）を追加</h3><ul><li>ツールバーから爆弾音符を選び、通常の単音と同じように配置・移動・コピーできます。プレビュー・撮影にも表示します。</li><li>空白はツールバーから外しましたが、既存の空白入力キーとキー設定は引き続き使えます。</li></ul></article>
+<article class="update-entry" data-update="rename"><div class="update-meta"><time datetime="2026-11-11">2026.11.11</time><span>Web版</span><span>Windows版</span></div><h3>Tja-Editor3へ名称変更</h3><ul><li>同名の別ソフトと区別するため、名称をTja-Editor3へ変更しました。既存の譜面ファイルとキー設定は引き続き使用できます。</li></ul></article>
+<article class="update-entry" data-update="web-layout"><div class="update-meta"><time datetime="2026-11-11">2026.11.11</time><span>Web版</span></div><h3>Web版の編集画面と設定メニューを改善</h3><ul><li>波形・ノーツ欄・説明欄を拡張し、プレビューとシークバーを調整しました。</li><li>BPM・OFFSET、自動採譜・下位譜面、分岐・DEMOSTARTをタイムライン下に常設。元に戻す・やり直すを上部へ移動しました。</li><li>設定メニューの項目を整理し、表示位置を修正。デスクトップ版の入手案内と紹介動画も追加しました。</li></ul></article>
+<article class="update-entry" data-update="branch-multi"><div class="update-meta"><time datetime="2026-11-11">2026.11.11</time><span>Web版</span><span>Windows版</span></div><h3>分岐・多重スクロールの編集を改善</h3><ul><li>分岐・多重スクロールのラベルをダブルクリックして削除できるようになりました。操作は1回で元に戻せます。</li><li>Web版の分岐レーン・追加レーン・マーカーの表示位置を調整し、説明欄に多重設定をまとめました。</li></ul></article>
+<article class="update-entry" data-update="web-filming"><div class="update-meta"><time datetime="2026-11-11">2026.11.11</time><span>Web版</span></div><h3>Web版でMP4撮影・音源編集・試し叩き</h3><ul><li>ブラウザー内でオート演奏のMP4、PNGサムネイルを作成。ローカル動画の読み込みと同期に対応しました。</li><li>音源のトリム・カット・フェード・音量などの編集と、別ウィンドウの試し叩きを利用できます。PC音録音はブラウザーの音声共有への対応が必要です。</li></ul></article>
+<article class="update-entry" data-update="web-public"><div class="update-meta"><time datetime="2026-11-10">2026.11.10</time><span>Web版</span></div><h3>Web版を公開・更新</h3><ul><li>インストール不要でTJA譜面編集・自動採譜・下位譜面生成・分岐・多重スクロールを使えるWeb版を公開しました。</li><li>音源付きの編集ZIP保存とTJA＋OGGのZIP書き出しに対応。処理は端末内で行います。</li></ul></article></section></div></dialog>
+</body>
+</html>

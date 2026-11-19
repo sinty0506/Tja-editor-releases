@@ -1,0 +1,34 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; connect-src 'self' data:; style-src 'self'; img-src 'self' data:">
+  <title>試し叩き</title>
+  <link rel="stylesheet" href="practice.css">
+<meta name="robots" content="noindex, follow"></head>
+<body>
+  <header class="practice-header">
+    <div class="heading"><strong>🔴 試し叩き</strong><span id="practice-difficulty"></span><span id="practice-range">曲全体</span><span id="practice-start-label"></span></div>
+    <div class="achievement">達成 <strong id="practice-achievement">0%</strong><span>（クリア目安 80%・魂目安 100%）</span></div>
+    <button id="practice-close" type="button" aria-label="試し叩きを閉じる">×</button>
+  </header>
+  <section class="practice-stage" aria-label="試し叩きレーン">
+    <div class="drum-pads"><button id="practice-don" class="drum-pad don" type="button" aria-label="ドン入力">ドン<small id="don-keys"></small></button><button id="practice-ka" class="drum-pad ka" type="button" aria-label="カッ入力">カッ<small id="ka-keys"></small></button></div>
+    <canvas id="practice-lane" aria-label="譜面の帯。ドラッグで開始小節を選択"></canvas>
+  </section>
+  <section class="practice-statistics" aria-label="判定結果">
+    <output class="good">良 <span id="practice-good">0</span></output><output>可 <span id="practice-ok">0</span></output><output class="miss">不可 <span id="practice-miss">0</span></output><output>連打 <span id="practice-roll">0</span>打</output><output id="practice-feedback" aria-live="polite"></output><output id="practice-time"></output>
+  </section>
+  <section class="practice-controls" aria-label="試し叩きの操作">
+    <button id="practice-play" class="play" type="button" disabled>準備中…</button>
+    <label><input id="practice-show-misses" type="checkbox">叩けなかった所に × を付ける</label>
+    <label>はやさ <select id="practice-speed" aria-label="試し叩き速度"><option value="1">1倍</option><option value="0.95">0.95倍</option><option value="0.9">0.9倍</option><option value="0.85">0.85倍</option><option value="0.8">0.8倍</option><option value="0.75">0.75倍</option><option value="0.7">0.7倍</option><option value="0.65">0.65倍</option><option value="0.6">0.6倍</option><option value="0.55">0.55倍</option><option value="0.5">0.5倍</option></select></label>
+    <label><input id="practice-auto" type="checkbox">オート</label>
+    <div class="adjustment"><span>判定調整</span><button id="practice-adjust-minus" type="button" title="−1ms（Shift: −10ms）">−</button><label><input id="practice-adjust" type="number" min="-500" max="500" step="1" value="0" aria-label="判定調整。正の値で入力を早める">ms</label><button id="practice-adjust-plus" type="button" title="＋1ms（Shift: ＋10ms）">＋</button></div>
+    <button id="practice-retry" type="button">やり直す</button>
+  </section>
+  <footer><span id="practice-key-help"></span><span>Space＝開始／一時停止　Esc＝やめる　← → か帯のドラッグで始める小節を選べます</span></footer>
+  <script type="module" src="practice.js"></script>
+</body>
+</html>

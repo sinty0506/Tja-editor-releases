@@ -1,0 +1,44 @@
+:root { color-scheme: dark; font-family: "Yu Gothic UI", "Meiryo", system-ui, sans-serif; color: #e7e7e9; background: #1b1e23; }
+* { box-sizing: border-box; }
+body { margin: 0; height: 100vh; padding: 0 14px 10px; display: grid; grid-template-rows: 44px minmax(140px,1fr) 30px auto 26px; gap: 8px; overflow: hidden; }
+button, input, select { font: inherit; }
+button, select, input[type=number] { color: inherit; background: #282b30; border: 1px solid #505155; border-radius: 12px; }
+button { cursor: pointer; padding: 9px 15px; }
+button:hover { background: #393d44; }
+button:focus-visible, input:focus-visible, select:focus-visible, canvas:focus-visible { outline: 2px solid #ffcd30; outline-offset: 2px; }
+button:disabled { opacity: .6; cursor: wait; }
+.practice-header { -webkit-app-region: drag; display: flex; align-items: center; gap: 20px; min-width: 0; }
+.heading { display: flex; flex: 1; align-items: center; gap: 14px; white-space: nowrap; min-width: 0; }
+.heading strong { flex-shrink: 0; }
+#practice-start-label { overflow: hidden; text-overflow: ellipsis; }
+.heading strong { font-size: 20px; font-weight: 900; }
+#practice-difficulty, #practice-start-label { color: #ffca25; font-weight: 700; }
+.achievement { margin-left: auto; white-space: nowrap; font-weight: 600; flex-shrink: 0; }
+.achievement strong { color: #ffcd30; font-size: 24px; margin-left: 5px; }
+.achievement span { color: #c0c0c4; font-size: 15px; }
+#practice-close { -webkit-app-region: no-drag; padding: 0; flex: 0 0 42px; height: 40px; font-size: 27px; background: transparent; }
+.practice-stage { display: flex; min-height: 0; border-radius: 16px; overflow: hidden; background: #25262c; }
+.drum-pads { flex: 0 0 156px; display: flex; gap: 7px; padding: 10px 8px; background: #2c2225; border-right: 4px solid #60636b; }
+.drum-pad { width: 50%; padding: 0 4px; border: 2px solid #493b3f; border-radius: 13px; background: #2d2225; color: #b3a5a9; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px; font-size: 16px; touch-action: none; }
+.drum-pad small { font-size: 12px; }
+.drum-pad.don.pressed { background: #a93f31; border-color: #ffaf9e; color: white; }
+.drum-pad.ka.pressed { background: #247f9f; border-color: #9ce8ff; color: white; }
+#practice-lane { flex: 1; min-width: 0; width: 0; height: 100%; display: block; touch-action: none; cursor: grab; }
+#practice-lane:active { cursor: grabbing; }
+.practice-statistics { display: flex; align-items: center; gap: 22px; font-size: 20px; font-weight: 700; font-variant-numeric: tabular-nums; }
+.good { color: #ffce29; }.miss { color: #83aaff; }
+#practice-feedback { font-size: 15px; color: #d1c5a4; font-weight: 500; }
+#practice-time { margin-left: auto; color: #9c9fa6; font-size: 13px; font-weight: 400; }
+.practice-controls { display: flex; flex-wrap: nowrap; overflow-x: auto; padding-bottom: 3px; gap: 12px 18px; align-items: center; font-size: 17px; }
+.practice-controls > * { flex-shrink: 0; }
+.practice-controls label, .adjustment { display: inline-flex; align-items: center; gap: 7px; white-space: nowrap; }
+input[type=checkbox] { width: 18px; height: 18px; accent-color: #f7c840; margin: 0 3px 0 0; }
+.play { background: #f3f3f3; color: #282b30; min-width: 178px; padding: 13px 16px; border-color: #f3f3f3; }
+.play:hover { background: #ddd; }
+select { height: 44px; padding: 4px 10px; min-width: 88px; }
+.adjustment { gap: 6px; }.adjustment button { width: 42px; padding: 9px 0; font-size: 22px; }
+#practice-adjust { width: 62px; background: transparent; border-color: transparent; text-align: right; padding: 6px 0; font-variant-numeric: tabular-nums; appearance: textfield; }
+#practice-adjust::-webkit-inner-spin-button { appearance: none; }
+#practice-retry { font-size: 15px; }
+footer { display: flex; gap: 22px; align-items: center; color: #9d9fa7; font-size: 14px; white-space: nowrap; }
+@media (max-width: 1150px) { .practice-controls { font-size: 14px; gap: 8px 12px; }.play { min-width: 150px; }.heading { gap: 8px; }.achievement span { display: none; }footer { font-size: 12px; gap: 12px; } }

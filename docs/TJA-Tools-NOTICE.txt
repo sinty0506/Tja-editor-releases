@@ -1,0 +1,14 @@
+TJA Tools by Snack <korsnack@korsnack.kr>
+https://github.com/Snack-X/tja-tools
+https://tja.snack.studio/
+
+Pinned source: 711de5bf20f2f9c1bfdc8ae79fc3d817fcfde238
+License declaration: package.json (MIT).
+
+Included: src/js/drawChart.js, src/js/canvasHelper.js, src/js/parseTJA.js,
+and the WOFF2 Pixel 3x5 font embedded in src/css/Pixel-3x5.css.
+The renderer's import specifier gains a .js extension for ESM compatibility.
+Type declarations and TJA Editor integration are maintained separately.
+
+The deployed app.js and repository dist/js/app.js were identical at audit:
+SHA-256 75a86bf955cdc2f1c32ed13a7110566b053b60bbe825e334bcec459509b78dc6

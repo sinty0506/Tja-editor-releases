@@ -1,0 +1,294 @@
+/* Desktop context editors stay in the layout instead of covering commands. */
+.desktop-workspace main {
+  grid-template-rows: minmax(300px,1fr) 36px var(--waveform-lane-height) var(--note-lane-height) var(--event-lane-height) var(--barline-lane-height);
+  align-content: start;
+}
+.desktop-workspace .editing-overview {
+  grid-template-columns: minmax(0, 1fr) 290px 270px !important;
+  height: clamp(410px, 42vh, 470px) !important;
+  min-height: 410px !important;
+  gap: 10px;
+}
+.desktop-workspace .editing-controls {
+  min-width: 0;
+  overflow: visible;
+  gap: 10px;
+  padding: 4px 0;
+}
+.desktop-workspace .editing-controls .editor-transport { align-items: center; }
+.desktop-workspace .editing-controls #time-readout { flex-basis: 100%; }
+.desktop-workspace .editing-controls .timeline-grid-controls { align-items: flex-start; gap: 6px; }
+.desktop-workspace .editing-controls .timeline-grid-controls .grid-toggle { flex-basis: 100%; }
+.desktop-workspace .editing-controls .offset-audio-row { gap: 5px; }
+.desktop-workspace .editing-controls .barline-origin-controls { flex-basis: 100%; }
+.desktop-workspace .editing-controls .offset-panel { flex: 0 0 auto; }
+.desktop-workspace .editing-controls .assist-controls { align-items: flex-start; }
+.desktop-workspace .editing-controls .assist-controls > label { flex-basis: 100%; }
+.desktop-workspace .editing-controls .editor-speed { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; }
+.desktop-workspace .editing-controls .editor-speed > label { display: flex; align-items: center; flex: 1 0 100%; gap: 6px; }
+.desktop-workspace .editing-controls #playback-rate { width: auto; flex: 1; min-width: 100px; }
+.desktop-workspace .editing-controls .editor-transport { margin-top: auto; }
+.desktop-workspace .tool-palette > .palette-realtime { flex: 0 0 auto; margin: 5px 3px 0; min-height: 32px; font-size: 11px; }
+.desktop-workspace .editing-controls .editor-zoom { gap: 8px; }
+.desktop-workspace .editing-controls .timeline-controls,
+.desktop-workspace .editing-controls .waveform-scale-controls { flex-basis: 100%; }
+.desktop-workspace .editing-controls .preview-audio-controls { display: none; }
+.desktop-workspace .navigation-row .difficulty-tabs { flex: 0 1 auto; }
+.desktop-workspace .navigation-audio-controls {
+  display: flex;
+  flex: 0 1 auto;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 5px 8px;
+}
+.desktop-workspace .navigation-audio-controls .volume-control { font-size: 10px; gap: 4px; }
+.desktop-workspace .navigation-audio-controls input[type=range] { width: 68px; }
+.desktop-workspace .navigation-audio-controls #metronome-toggle { font-size: 10px; min-height: 29px; padding: 4px 7px; }
+/* While one of the inspector detail sections (equalize / gradient /
+   periodic / stats / range transform) is open, the context column
+   takes over the editing-controls column: OFFSET and DEMOSTART are
+   hidden for the duration (owner accepted 2026-11-13) and return
+   when the section closes and a regular-width tool is selected. */
+@media (min-width: 1100px) {
+  html.inspector-detail-open .desktop-workspace .editing-overview {
+    grid-template-columns: minmax(0, 1fr) 0 570px !important;
+  }
+  html.inspector-detail-open .desktop-workspace .editing-controls {
+    display: none !important;
+  }
+}
+.desktop-workspace .editing-context {
+  min-width: 0;
+  min-height: 0;
+  overflow: auto;
+  scrollbar-gutter: stable;
+  border-left: 1px solid #34435a;
+  padding: 4px 4px 8px 12px;
+  color: #d6e2f2;
+  overflow-wrap: anywhere;
+}
+.desktop-workspace .editing-context [hidden] { display: none !important; }
+.desktop-workspace .editing-context[hidden] { display: none !important; }
+.context-heading { margin: 0 0 10px; font-size: 12px; color: #a8cde2; }
+.desktop-workspace .editing-context .tool-detail-panel {
+  position: static;
+  width: auto;
+  max-height: none;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  overflow: visible;
+}
+.desktop-workspace .editing-context .selection-popup,
+.desktop-workspace .editing-context #event-inline-editor,
+.desktop-workspace .editing-context #branch-editor-dialog,
+.desktop-workspace .editing-context #balloon-inline-editor {
+  position: static;
+  inset: auto;
+  width: 100%;
+  max-width: none;
+  max-height: none;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  box-shadow: none;
+  overflow: visible;
+}
+.desktop-workspace .editing-context[data-context=branch] > :not(.context-heading):not(#branch-editor-dialog),
+.desktop-workspace .editing-context[data-context=selection] > :not(.context-heading):not(#selection-popup),
+.desktop-workspace .editing-context[data-context=tool] > #selection-popup { display: none; }
+.desktop-workspace .editing-context[data-context=balloon] > #selection-popup { display: none; }
+.desktop-workspace .editing-context #event-inline-editor:not([hidden]),
+.desktop-workspace .editing-context #balloon-inline-editor:not([hidden]) { display: flex; flex-direction: column; align-items: stretch; gap: 8px; }
+.desktop-workspace .editing-context #event-inline-editor::before { display: none; }
+.desktop-workspace .editing-context label { display: grid; grid-template-columns: minmax(64px, auto) minmax(0, 1fr); align-items: center; gap: 6px; }
+.desktop-workspace .editing-context input,
+.desktop-workspace .editing-context select,
+.desktop-workspace .editing-context button { min-width: 0; max-width: 100%; }
+.desktop-workspace .editing-context .branch-create-grid { grid-template-columns: 1fr; gap: 6px; }
+.desktop-workspace .editing-context .branch-create-grid input,
+.desktop-workspace .editing-context .branch-create-grid select { min-height: 30px; padding-block: 4px; }
+.desktop-workspace .editing-context .branch-create-grid input[type=number] { width: 100%; }
+.desktop-workspace .editing-context .branch-editor-form { min-width: 0; }
+.desktop-workspace .editing-context h2 { margin: 2px 0 8px; font-size: 13px; }
+.desktop-workspace .editing-context p { font-size: 11px; line-height: 1.55; margin: 5px 0 9px; }
+.desktop-workspace .editing-context .dialog-actions { position: static; padding: 0; margin-top: 10px; }
+.desktop-workspace .editing-context .branch-editor-header { display: flex; align-items: center; justify-content: space-between; gap: 6px; }
+.desktop-workspace .editing-context .branch-editor-header h2 { margin: 0; font-size: 12px; }
+.desktop-workspace .editing-context .branch-editor-header .dialog-actions { margin: 0; flex: 0 0 auto; }
+.desktop-workspace .editing-context .branch-editor-header button { min-height: 27px; padding: 3px 7px; font-size: 11px; }
+.desktop-workspace .editing-context #branch-editor-error:empty,
+.desktop-workspace .editing-context #branch-section-list:empty { display: none; }
+.desktop-workspace .editing-context .branch-section-list { max-height: none; }
+.desktop-workspace .editing-context #scroll-detail-shortcuts { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.desktop-workspace .editing-context #balloon-inline-editor { margin-bottom: 14px; }
+.desktop-workspace .editing-context #balloon-inline-editor input { width: 100%; }
+@media (min-width: 1550px) {
+  .desktop-workspace .editing-overview { grid-template-columns: minmax(0, 1fr) 300px 290px !important; }
+}
+
+/* Direct palette controls and two workspace settings panes. */
+.desktop-workspace [hidden] { display: none !important; }
+.desktop-workspace .history-controls { margin-left: auto; }
+.desktop-workspace .workspace-utility { margin-left: auto; justify-content: flex-end; }
+.desktop-workspace .workspace-document { flex-wrap: wrap; }
+.desktop-workspace .workspace-document .toolbar-statistics { display: flex; flex-wrap: nowrap; margin-left: 0; flex: 0 0 auto; padding: 0; gap: 14px; font-size: 12px; }
+.desktop-workspace .editor-transport { display: flex; align-items: center; flex-wrap: wrap; gap: 4px; }
+.desktop-workspace .preview-header .editor-transport { margin-left: auto; }
+.desktop-workspace .preview-header .editor-transport button { min-height: 29px; padding: 4px 6px; font-size: 11px; }
+.desktop-workspace .preview-header #time-readout { flex-basis: auto; font-size: 10px; }
+.desktop-workspace .comparison-audio-control { display: flex; align-items: center; gap: 4px; }
+.desktop-workspace #compare-audio { max-width: 160px; }
+.desktop-workspace .palette-editing-tools { display: flex; flex-direction: column; gap: 9px; margin-top: 8px; padding-top: 8px; border-top: 1px solid #34435a; }
+.desktop-workspace .palette-editing-tools label { font-size: 11px; }
+.desktop-workspace .palette-editing-tools button,
+.desktop-workspace .palette-editing-tools select { min-height: 29px; padding: 3px 5px; font-size: 10px; }
+.desktop-workspace .palette-editing-tools .editor-speed { display: flex; flex-direction: column; align-items: flex-start; gap: 5px; }
+.desktop-workspace .palette-editing-tools .editor-speed label { display: flex; align-items: center; gap: 4px; width: 100%; }
+.desktop-workspace .palette-editing-tools #playback-rate { flex: 1; width: 0; min-width: 0; }
+.desktop-workspace .palette-editing-tools .timeline-grid-controls { display: flex; flex-direction: column; align-items: stretch; border: 0; padding: 0; gap: 6px; }
+.desktop-workspace .palette-editing-tools .grid-division { display: flex; gap: 6px; align-items: center; }
+.desktop-workspace .palette-special-grid { display: flex; align-items: center; gap: 4px; }
+.desktop-workspace .palette-special-grid input[type=number] { width: 46px; min-width: 0; min-height: 28px; padding: 2px; }
+.desktop-workspace .palette-special-grid label { display: flex; align-items: center; gap: 1px; white-space: nowrap; }
+.desktop-workspace .palette-special-grid input[type=checkbox] { width: 13px; height: 13px; margin: 0; }
+.desktop-workspace #special-grid-toggle[aria-pressed=true] { color: #10202e; background: #8fd4eb; border-color: #c9f0ff; }
+.desktop-workspace .palette-editing-tools .editor-zoom { display: flex; flex-direction: column; align-items: stretch; gap: 7px; }
+.desktop-workspace .palette-editing-tools .timeline-controls,
+.desktop-workspace .palette-editing-tools .waveform-scale-controls { display: flex; flex-wrap: nowrap; align-items: center; gap: 4px; }
+.desktop-workspace .palette-editing-tools .zoom-slider-label,
+.desktop-workspace .palette-editing-tools .waveform-scale-controls label { display: flex; flex: 1; min-width: 0; align-items: center; gap: 4px; }
+.desktop-workspace .palette-editing-tools #zoom-slider,
+.desktop-workspace .palette-editing-tools #waveform-scale { flex: 1; width: 0; min-width: 0; }
+.desktop-workspace .editing-controls .tool-detail-panel { position: static; margin: 0; padding: 5px; border: 0; max-height: none; overflow: auto; }
+.desktop-workspace .editing-controls .tool-detail-panel h2 { font-size: 13px; }
+.desktop-workspace .editing-controls .tool-detail-panel p { font-size: 12px; line-height: 1.6; }
+.desktop-workspace #workspace-settings-host { grid-column: 2; grid-row: 1; min-width: 0; min-height: 0; }
+.desktop-workspace .workspace-docked-dialog { position: static; inset: auto; margin: 0; width: 100% !important; height: 100%; max-width: none !important; max-height: none !important; padding: 0; border: 0; border-radius: 0; box-shadow: none; background: transparent; overflow: hidden; }
+.desktop-workspace .workspace-docked-dialog:not([open]) { display: none !important; }
+.desktop-workspace .workspace-docked-dialog > form { height: 100%; margin: 0; }
+.desktop-workspace .docked-dialog-grid { display: grid !important; grid-template-columns: minmax(0,1fr); grid-template-rows: auto minmax(0,1fr) auto; row-gap: 8px; }
+.desktop-workspace .docked-dialog-body { min-height: 0; overflow: auto; }
+.desktop-workspace .docked-dialog-header { grid-column: 1/-1; display: flex; justify-content: space-between; align-items: center; gap: 8px; }
+.desktop-workspace .docked-dialog-header h2 { margin: 0; font-size: 13px; }
+.desktop-workspace .docked-dialog-header button { padding: 3px 8px; min-height: 28px; font-size: 11px; }
+.desktop-workspace .docked-dialog-pane { min-width: 0; min-height: 0; overflow-wrap: anywhere; padding-right: 5px; }
+.desktop-workspace .editing-controls > .workflow-card { margin: 0; padding: 7px; min-width: 0; }
+.desktop-workspace .docked-dialog-actions { grid-column: 1/-1; margin: 0; padding: 3px 0; }
+.desktop-workspace .docked-dialog-pane label { display: flex; flex-wrap: wrap; align-items: center; gap: 5px; font-size: 11px; }
+.desktop-workspace .docked-dialog-pane p { margin: 5px 0 9px; font-size: 11px; line-height: 1.5; }
+.desktop-workspace .docked-dialog-pane fieldset { min-width: 0; margin: 5px 0 10px; padding: 7px; }
+.desktop-workspace .docked-dialog-pane input:not([type=checkbox]):not([type=range]),
+.desktop-workspace .docked-dialog-pane select { min-width: 0; max-width: 100%; min-height: 29px; padding: 3px; }
+.desktop-workspace .docked-dialog-pane button { min-height: 28px; padding: 4px 6px; font-size: 11px; max-width: 100%; }
+.desktop-workspace .docked-dialog-pane .edit-menu-items { position: static; min-width: 0; border: 0; padding: 0; background: transparent; }
+.desktop-workspace .docked-dialog-pane .offset-panel { padding: 0; border: 0; }
+.desktop-workspace .docked-dialog-pane #offset-value { width: 72px; }
+.desktop-workspace .docked-dialog-pane .offset-audio-row,
+.desktop-workspace .docked-dialog-pane .assist-controls { gap: 4px; flex-wrap: wrap; }
+.desktop-workspace .docked-dialog-pane .barline-origin-controls { flex-wrap: wrap; }
+.desktop-workspace .docked-dialog-pane .auto-chart-settings,
+.desktop-workspace .docked-dialog-pane .auto-sound-mapping { grid-template-columns: minmax(0,1fr); }
+.desktop-workspace .docked-dialog-pane .lower-target-row { display: flex; flex-wrap: wrap; gap: 4px; }
+.desktop-workspace .docked-dialog-pane .preview-sound-row { display: flex; flex-wrap: wrap; }
+.desktop-workspace .docked-dialog-pane .binding-row { grid-template-columns: minmax(0,1fr); }
+.desktop-workspace[data-toolbar-side=right] body { grid-template-columns: minmax(0,1fr) var(--palette-width); }
+.desktop-workspace[data-toolbar-side=right] .tool-palette { grid-column: 2; grid-row: 2; }
+.desktop-workspace[data-toolbar-side=right] main,
+.desktop-workspace[data-toolbar-side=right] #audio-editor-view { grid-column: 1; grid-row: 2; }
+
+/* Reserve room for ordinary event rows and keep the bottom barline visible. */
+.desktop-workspace .editing-overview { height: 100% !important; min-height: 0 !important; }
+.desktop-workspace .playback-position-control { align-self: center; margin: 0; padding-block: 0; }
+.desktop-workspace .docked-dialog-body .binding-list { max-height: none; overflow: visible; }
+.desktop-workspace #new-project-form { display: flex; flex-direction: column; gap: 14px; }
+.desktop-workspace .new-project-column { display: flex; flex-direction: column; gap: 14px; }
+.desktop-workspace .new-project-column > label { display: grid; grid-template-columns: 84px minmax(0,1fr); align-items: center; margin: 0; gap: 8px; }
+.desktop-workspace .new-project-column .title-from-audio-row { margin: 0; align-self: flex-end; }
+.desktop-workspace .new-project-column .audio-row,
+.desktop-workspace .new-project-column .system-recording-row { min-width: 0; height: auto; white-space: normal; }
+.desktop-workspace #audio-name { overflow-wrap: anywhere; min-width: 0; }
+.desktop-workspace .new-project-settings-hint { white-space: normal; overflow-wrap: anywhere; }
+.desktop-workspace #event-preset { display: flex; flex-direction: column; gap: 8px; margin-top: 12px; border-top: 1px solid #34435a; padding-top: 8px; }
+.desktop-workspace #event-preset h3 { margin: 0; font-size: 12px; }
+.desktop-workspace .editing-context #tool-help-panel { display: block !important; }
+.desktop-workspace .editing-context #editor-tool-detail:not([hidden]) { display: block !important; }
+.desktop-workspace .navigation-audio-controls .waveform-scale-controls { display: inline-flex; align-items: center; gap: 4px; margin-left: 10px; }
+.desktop-workspace #event-inline-editor { z-index: 90; }
+.desktop-workspace #add-branch-section { display: none; }
+.desktop-workspace .preview.branch-comparison .preview-stage { min-height: 40px !important; height: 60px; flex: 1; }
+.desktop-workspace #event-inline-editor { gap: 4px; width: max-content; }
+.desktop-workspace #event-inline-editor[data-side=left] #event-inline-label { order: 9; }
+.desktop-workspace #event-inline-editor[data-side=left] #event-value-control,
+.desktop-workspace #event-inline-editor[data-side=left] #event-numerator,
+.desktop-workspace #event-inline-editor[data-side=left] #event-denominator { order: 10; }
+.desktop-workspace #event-inline-editor[data-side=left] #event-input-choices { order: 20; }
+
+.desktop-workspace .wide-settings-open { grid-template-columns: minmax(300px,1fr) minmax(620px,1fr) !important; }
+.desktop-workspace .wide-settings-open #workspace-settings-host { grid-column: 2/-1; }
+.desktop-workspace .wide-settings-open .docked-dialog-body { display: grid; grid-template-columns: minmax(0,1fr) minmax(0,1fr); gap: 12px; overflow: auto; align-content: start; }
+.desktop-workspace .wide-settings-open .docked-dialog-header h2 { font-size: 15px; }
+.desktop-workspace .wide-settings-open .docked-dialog-grid { gap: 5px; }
+.desktop-workspace #inline-demo-controls { min-width: 0; padding: 6px; border-top: 1px solid #34425a; }
+.desktop-workspace #inline-demo-controls h2 { font-size: 12px; margin: 0 0 5px; }
+.desktop-workspace #inline-demo-controls label { display: inline-flex; align-items: center; gap: 4px; }
+.desktop-workspace #inline-demo-controls .assist-controls { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 4px; }
+.desktop-workspace #inline-demo-controls button { min-height: 26px; padding: 3px 5px; font-size: 11px; }
+.desktop-workspace #inline-demo-controls input { width: 75px; min-height: 27px; padding: 2px 4px; }
+.desktop-workspace #inline-demo-controls select { min-height: 25px; max-width: 125px; padding: 2px; font-size: 11px; }
+.desktop-workspace #inline-demo-controls #demo-error:empty { display: none; }
+.desktop-workspace .wide-settings-open .auto-chart-settings { gap: 5px; }
+.desktop-workspace .wide-settings-open .auto-sound-mapping { display: grid; gap: 5px; padding: 5px; }
+.desktop-workspace .wide-settings-open .auto-sound-mapping label { justify-content: space-between; }
+.desktop-workspace .wide-settings-open .auto-sound-mapping small,
+.desktop-workspace .wide-settings-open .concept-choice-help { display: none; }
+.desktop-workspace .wide-settings-open #auto-chart-form > .docked-dialog-body { overflow: hidden; }
+.desktop-workspace .advanced-workflow-popup { width: min(1120px,92vw); max-width: 92vw; max-height: 90vh; padding: 16px; }
+.desktop-workspace .advanced-workflow-popup #auto-chart-form { display: block !important; }
+.desktop-workspace .advanced-workflow-popup .docked-dialog-header { position: sticky; top: 0; background: #131b29; z-index: 2; padding-bottom: 8px; }
+.desktop-workspace .advanced-workflow-popup .docked-dialog-body { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; overflow: visible; }
+.desktop-workspace .advanced-workflow-popup #auto-chart-advanced-details { margin-top: 16px; }
+.desktop-workspace .advanced-workflow-popup #auto-chart-advanced-details > summary { display: none; }
+.desktop-workspace #analysis-dialog .workflow-card { margin: 0 0 6px; padding: 6px; }
+.desktop-workspace #analysis-dialog .workflow-card > p { margin: 4px 0; font-size: 10px; }
+.desktop-workspace #analysis-dialog input[type=number] { width: 76px; }
+.desktop-workspace #analysis-dialog .docked-dialog-actions { display: none; }
+.desktop-workspace #auto-chart-dialog #auto-chart-analysis { display: none; }
+
+/* All docked workflows share the editor's available height. */
+.desktop-workspace .auto-chart-open #auto-chart-form { grid-template-rows: auto minmax(0,1fr) auto; }
+.desktop-workspace .auto-chart-open .docked-dialog-pane p { margin: 2px 0 5px; line-height: 1.35; }
+.desktop-workspace .auto-chart-open .auto-chart-basic { gap: 3px; padding: 4px 6px; }
+.desktop-workspace .auto-chart-open .auto-chart-settings > label { gap: 3px; }
+.desktop-workspace .auto-chart-open .auto-sound-mapping { margin: 0 0 4px; }
+.desktop-workspace .auto-chart-open .auto-sound-mapping small { display: none; }
+.desktop-workspace .auto-chart-open .docked-dialog-actions { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 3px 5px; padding: 0; }
+.desktop-workspace .auto-chart-open #auto-chart-density-notice { flex: 1 0 100%; margin: 0 0 3px; font-size: 12px; line-height: 1.4; }
+.desktop-workspace .event-tools #barline-tool { gap: 2px; font-size: 9px; padding: 3px 1px; }
+.desktop-workspace .event-tools #barline-tool .barline-icon { display: none; }
+.desktop-workspace .palette-primary #practice-toggle { width: 100%; justify-content: center; }
+.desktop-workspace .auto-chart-open .auto-sound-mapping select { min-height: 24px; padding: 2px; }
+.desktop-workspace .auto-chart-open #auto-chart-error:empty { display: none; }
+.desktop-workspace .auto-chart-open #auto-chart-status { display: block; font-size: 10px; max-height: 2.6em; overflow: hidden; line-height: 1.3; }
+.desktop-workspace .auto-chart-open #auto-chart-status:empty { display: none; }
+.desktop-workspace .auto-chart-open #open-auto-advanced { margin-top: 10px; }
+.desktop-workspace .auto-chart-open #auto-chart-scope { padding: 3px 6px; margin: 0 0 4px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.desktop-workspace .auto-chart-open .assist-controls.auto-chart-basic { margin: 3px 0; padding: 2px 6px; }
+.auto-nps-control { display: flex; flex-direction: column; align-items: stretch !important; min-width: 0; }
+.auto-nps-control input[type=range] { width: 100%; margin: 0; flex: none !important; height: 18px; }
+.auto-density-marks { position: relative; height: 20px; margin: -3px 10px 0; align-self: stretch; }
+.auto-density-marks button { position: absolute; top: 0; transform: translateX(-50%); border: 0; border-radius: 0; border-top: 5px solid #63728a; padding: 1px 0 !important; min-height: 20px !important; background: transparent; font-size: 10px !important; color: #91a0b6; white-space: nowrap; }
+.auto-density-marks button[data-allowed=true] { color: #bceeff; border-top-color: #83d6f3; }
+
+/* Spend the former empty tracks on legible settings, without moving the timeline. */
+.desktop-workspace .docked-dialog-pane label,
+.desktop-workspace .docked-dialog-pane p { font-size: 12px; }
+.desktop-workspace .docked-dialog-pane button { min-height: 30px; font-size: 12px; }
+.desktop-workspace .editing-context p { font-size: 12px; }
+.desktop-workspace .wide-settings-open .docked-dialog-grid { gap: 6px; }
+.desktop-workspace .wide-settings-open .docked-dialog-pane > :first-child { margin-top: 0; }
+.desktop-workspace #lower-difficulty-dialog fieldset { margin: 5px 0 0; padding: 7px; gap: 6px; }
+.desktop-workspace #lower-difficulty-dialog .lower-target-row { gap: 5px 8px; }
+.desktop-workspace #lower-difficulty-dialog #lower-error:empty,
+.desktop-workspace #lower-difficulty-dialog #lower-report:empty { display: none; }

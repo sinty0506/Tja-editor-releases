@@ -1,0 +1,61 @@
+/* Vector icons and direct actions share the existing controls and hit targets. */
+/* Bound the editor track before sizing canvases; an implicit auto track keeps
+   their old intrinsic width after a window/zoom change and causes overflow. */
+.desktop-workspace main { grid-template-columns: minmax(0, 1fr); }
+.desktop-workspace main > section { min-width: 0; }
+.desktop-workspace .toolbar-group, .desktop-workspace .toolbar .course-controls,
+.desktop-workspace .timeline-grid-controls, .desktop-workspace .timeline-controls,
+.desktop-workspace .waveform-scale-controls { flex-wrap: wrap; min-width: 0; max-width: 100%; }
+.desktop-workspace .offset-audio-row { flex-wrap: wrap; }
+.desktop-workspace .preview-audio-controls { flex: 1 1 auto; flex-wrap: wrap; min-width: 0; }
+.desktop-workspace .workspace-display-scale { display: flex; flex: 0 0 auto; align-items: center; gap: 2px; }
+.desktop-workspace .workspace-display-scale > span { font-size: 11px; margin-right: 3px; }
+.desktop-workspace .workspace-titlebar { flex-wrap: wrap; }
+.desktop-workspace .workspace-display-scale button { min-width: 27px; min-height: 29px; padding: 4px; font-size: 11px; }
+.desktop-workspace #workspace-display-auto { min-width: 72px; }
+.desktop-icon { flex: 0 0 auto; pointer-events: none; vertical-align: middle; }
+.desktop-workspace button[data-desktop-icon] { display: inline-flex; align-items: center; justify-content: center; gap: 6px; }
+.desktop-workspace .workspace-search-button::before { content: none; }
+.desktop-workspace .workspace-titlebar { gap: 12px; }
+.desktop-workspace .workspace-search-button { min-width: 128px; }
+.desktop-workspace .workspace-quick-settings { display: flex; flex: 0 0 auto; gap: 3px; }
+.desktop-workspace .workspace-document #project-title { max-width: min(32vw, 360px); }
+.desktop-workspace #scroll-detail-panel label[hidden] { display: none; }
+.desktop-workspace #scroll-detail-shortcuts { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 4px; padding-top: 5px; }
+.desktop-workspace #scroll-detail-shortcuts button { min-width: 0; min-height: 33px; font-size: 11px; padding: 4px; }
+.desktop-workspace .preview-audio-controls .volume-control { width: auto; }
+.desktop-workspace .preview-audio-controls .volume-control input[type=range] { flex: 0 0 80px; width: 80px; min-width: 80px; }
+.desktop-workspace .workspace-barline-origin { flex: 0 1 auto; gap: 4px; padding: 0; }
+.desktop-workspace .workspace-barline-origin > span { font-size: 10px; }
+.desktop-workspace #workspace-project-details[popover] { position: fixed; inset: auto; margin: 0; padding: 12px; width: min(340px, calc(100vw - 20px)); overflow-y: auto; box-shadow: 0 8px 24px #0008; }
+.desktop-workspace #workspace-project-details h2 { display: block; margin: 0 0 10px; }
+.desktop-workspace #workspace-project-details .palette-project-info { padding: 0; }
+.desktop-workspace .input-choices { display: flex; flex-wrap: wrap; align-items: center; gap: 4px; min-width: 0; }
+.desktop-workspace .input-choices .input-choice { min-height: 29px; min-width: 29px; max-width: 200px; padding: 4px 7px; font-size: 11px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.desktop-workspace .number-input-choices > input { width: 88px; min-width: 64px; flex: 0 1 88px; }
+.desktop-workspace .number-input-choices { gap: 4px; }
+.desktop-workspace .new-project-level { align-items: start; }
+.desktop-workspace .new-project-level-presets { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); flex: 1 1 100%; }
+.desktop-workspace .new-project-level-presets button { min-height: 32px; }
+.desktop-workspace .new-project-special-level { display: inline-flex; min-width: 0; }
+.desktop-workspace .new-project-special-level[hidden] { display: none; }
+.desktop-workspace .new-project-special-level input { width: 100px; }
+.desktop-workspace .new-project-settings-hint { margin: 0; padding: 8px 10px; border-left: 3px solid var(--ui-accent); background: #192638; color: #c4d2e5; font-size: 12px; line-height: 1.6; }
+.desktop-workspace .balloon-input-choices { grid-column: 1 / -1; }
+.desktop-workspace #event-input-choices { flex: 1 1 100%; padding-top: 4px; border-top: 1px solid var(--ui-border); }
+.desktop-workspace #event-input-choices[hidden] { display: none; }
+.desktop-workspace #new-project-dialog { max-height: calc(100vh - 32px); overflow-y: auto; scroll-padding-bottom: 72px; }
+.desktop-workspace #new-project-dialog .dialog-actions { position: sticky; bottom: -16px; padding-top: 10px; background: var(--ui-surface); }
+.desktop-workspace .editing-overview{height:330px!important;min-height:330px!important;max-height:none!important;grid-template-columns:minmax(0,1fr) minmax(450px,.9fr)!important}.desktop-workspace .editing-controls{padding:4px;overflow:visible!important;display:flex;flex-direction:column;gap:6px}.desktop-workspace .editing-controls button{min-height:29px!important;padding:4px 7px!important;font-size:11px!important}.desktop-workspace .editing-controls .offset-panel{padding:0!important;gap:7px!important}.desktop-workspace .editing-controls .offset-audio-row{gap:5px!important}.desktop-workspace .editing-controls .offset-audio-row input{width:74px}.desktop-workspace .editing-controls .barline-origin-controls{gap:3px!important}.desktop-workspace .editing-controls .barline-origin-controls span{display:none}.desktop-workspace .editing-controls .barline-origin-controls strong{font-size:10px}.desktop-workspace .editing-controls .preview-audio-controls{gap:6px!important}.desktop-workspace .editing-controls .volume-control{font-size:10px;gap:3px}.desktop-workspace .editing-controls .volume-control input{width:76px}.desktop-workspace .editing-controls .assist-controls{gap:5px!important}.desktop-workspace .editing-controls #playback-rate{width:70px}.desktop-workspace .editing-controls .timeline-grid-controls{border:0;padding:0;min-height:30px}.editor-control-row{display:flex;align-items:center;gap:6px;flex-wrap:wrap}.editor-zoom .timeline-controls,.editor-zoom .waveform-scale-controls{gap:4px}.editor-zoom #zoom-slider{width:75px}.editor-zoom #waveform-scale{width:65px}.editor-zoom label{font-size:10px}.editor-transport #time-readout{font-size:10px}.desktop-workspace .editing-controls select{min-height:29px}.desktop-workspace .editing-controls .realtime-input-section{display:none}
+.desktop-workspace #new-project-dialog{width:min(940px,calc(100vw - 40px))}.new-project-columns{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:28px}.new-project-column{min-width:0}.new-project-column label{grid-template-columns:84px minmax(0,1fr)}.new-project-column .audio-row{flex-wrap:wrap}.new-project-column .number-input-choices{flex-wrap:wrap}.new-project-column .number-input-choices input{width:100px}.new-project-settings-hint{margin-bottom:18px}.desktop-workspace .editing-overview{display:grid;grid-template-columns:minmax(0,1.15fr) minmax(380px,.85fr);gap:12px;min-height:244px;max-height:300px;border-bottom:1px solid #293c55;padding:8px}.desktop-workspace .editing-overview .preview{min-width:0;display:flex;flex-direction:column;border:1px solid #35445b;border-radius:7px;overflow:hidden}.desktop-workspace .editing-overview .preview-header{flex:0 0 auto;gap:6px}.desktop-workspace .editing-overview .preview-header small{display:none}.desktop-workspace .editing-overview .preview-stage{height:102px;min-height:76px;flex:1;padding:0}.desktop-workspace .editing-overview .preview:has(#compare-preview-stage[hidden])>.preview-stage{min-height:136px}.desktop-workspace .editing-controls{min-width:0;overflow:auto}.desktop-workspace .editing-controls .offset-panel{display:flex;flex-direction:column;align-items:stretch;padding:4px 8px;border:0}.desktop-workspace .editing-controls .offset-audio-row{flex-wrap:wrap;gap:5px}.desktop-workspace .editing-controls .preview-audio-controls{flex-wrap:wrap;gap:6px}.desktop-workspace .editing-controls .timeline-toolbar{border:0;padding:4px 8px;flex-wrap:wrap}.desktop-workspace .editing-controls .timeline-grid-controls{flex-wrap:wrap}.desktop-workspace .toolbar-statistics{display:grid;grid-template-columns:auto auto;gap:3px 12px;margin-left:auto;font-size:11px;white-space:nowrap}.desktop-workspace .workspace-utility{margin-left:0}.desktop-workspace .tool-palette>.palette-primary>section:first-of-type{margin-top:0}.desktop-workspace .offset-panel .assist-controls{gap:6px;flex-wrap:wrap}#input-settings-dialog{max-width:480px}#input-settings-dialog>label{display:flex;align-items:center;gap:8px}#input-settings-dialog input{width:90px}@media(max-width:1000px){.desktop-workspace .editing-overview{grid-template-columns:minmax(0,1fr) 360px;min-height:260px}.new-project-columns{gap:16px}}@media(max-width:700px){.new-project-columns{grid-template-columns:1fr}}
+@media (max-width: 1250px) {
+  .desktop-workspace .workspace-quick-settings .desktop-command-label { display: none; }
+  .desktop-workspace .workspace-quick-settings button { min-width: 32px; }
+  .desktop-workspace .toolbar-row button[data-desktop-icon] .desktop-icon { width: 16px; height: 16px; }
+}
+@media (max-width: 1350px) {
+  .desktop-workspace .toolbar-row button[data-desktop-icon]:not(#new-project):not(#open-project):not(#save-project):not(#export-project) .desktop-command-label { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); }
+  .desktop-workspace .toolbar-row button[data-desktop-icon] { min-width: 33px; }
+  .desktop-workspace .workspace-save-state { display: none; }
+  .desktop-workspace .workspace-titlebar { gap: 8px; }
+}
